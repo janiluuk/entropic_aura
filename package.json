@@ -1,5 +1,5 @@
 {
-  "name": "vue-image-upload-app",
+  "name": "k-aura-stabilizer",
   "version": "1.0.0",
   "private": true,
   "author": "Yani",
@@ -7,18 +7,19 @@
   "description": "Image AI app",
   "homepage": "",
   "bugs": {
-    "url": "https://github.com/janiluuk/vimage/issues"
+    "url": "https://github.com/janiluuk/k-aura_stabilizer/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/janiluuk/vimage-app.git"
+    "url": "git+https://github.com/janiluuk/k-aura_stabilizer.git"
   },
   "scripts": {
     "serve": "vite --cors --port 8080 --host --cors",
     "build": "vite build",
     "lint": "vite optimize --force",
     "dev": "vite --cors --host --port 8080 --debug trace",
-    "api": "node backend/server.js"
+    "api": "node backend/server.js",
+    "test": "node --test backend/test"
   },
   "dependencies": {
     "@cloudgeek/vue3-video-player": "^0.3.10",
@@ -80,7 +81,6 @@
     "vuex": "4.0.2",
     "ws": "^8.13.0",
     "yup": "^1.0.0",
-    "zlib": "^1.0.5",
     "express": "^4.18.2"
   },
   "devDependencies": {

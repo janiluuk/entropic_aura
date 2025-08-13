@@ -1,20 +1,29 @@
 const express = require('express');
 const { generateAndStream } = require('./comfyAudioClient');
 
-const app = express();
+function createApp(generateFn = generateAndStream, host = process.env.COMFY_HOST || '127.0.0.1:8188') {
+  const app = express();
 
-app.get('/api/stream', async (req, res) => {
-  const { text = '' } = req.query;
-  res.setHeader('Content-Type', 'audio/aac');
-  try {
-    await generateAndStream(text, res);
-  } catch (err) {
-    console.error(err);
-    res.status(500).end('Error generating audio');
-  }
-});
+  app.get('/api/stream', async (req, res) => {
+    const { text = '' } = req.query;
+    res.setHeader('Content-Type', 'audio/aac');
+    try {
+      await generateFn(text, res, host);
+    } catch (err) {
+      console.error(err);
+      res.status(500).end('Error generating audio');
+    }
+  });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Backend listening on port ${port}`);
-});
+  return app;
+}
+
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  createApp().listen(port, () => {
+    console.log(`Backend listening on port ${port}`);
+  });
+}
+
+module.exports = { createApp };
+
