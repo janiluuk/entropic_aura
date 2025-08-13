@@ -1,5 +1,5 @@
 {
-  "name": "vue-image-upload-app",
+  "name": "k-aura-stabilizer",
   "version": "1.0.0",
   "private": true,
   "author": "Yani",
@@ -7,11 +7,11 @@
   "description": "Image AI app",
   "homepage": "",
   "bugs": {
-    "url": "https://github.com/janiluuk/vimage/issues"
+    "url": "https://github.com/janiluuk/k-aura_stabilizer/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/janiluuk/vimage-app.git"
+    "url": "git+https://github.com/janiluuk/k-aura_stabilizer.git"
   },
   "scripts": {
     "serve": "vite --cors --port 8080 --host --cors",

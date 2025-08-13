@@ -29,7 +29,7 @@ AAC at 128 kbps.
 
 ## Installation
 
-1. Navigate in your repo folder: cd `vimage-app`
+1. Navigate in your repo folder: cd `k-aura_stabilizer`
 2. Install project dependencies: `npm install`
 3. Create a new .env file: `cp .env.example .env`
 4. `VUE_APP_BASE_URL` should contain the URL of your App
@@ -47,7 +47,7 @@ Register a user from `#/register` or login using pre-created users.
 Within the download you'll find the following directories and files:
 
 ```
-vimage-app
+k-aura_stabilizer
     ├── index.html 
     ├── public
     │   ├── layout
