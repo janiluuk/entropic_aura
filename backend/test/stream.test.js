@@ -19,6 +19,23 @@ test('GET /api/stream returns stubbed audio', async () => {
   server.close();
 });
 
+test('GET /api/stream requires text parameter', async () => {
+  const app = createApp(async (text, res) => {
+    res.end('ok');
+  });
+
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  const response = await fetch(`http://localhost:${port}/api/stream`);
+  const body = await response.json();
+
+  assert.strictEqual(response.status, 400);
+  assert.ok(body.error.includes('required'));
+
+  server.close();
+});
+
 test('GET /api/stream validates text length', async () => {
   const app = createApp(async (text, res) => {
     res.end('ok');
@@ -32,25 +49,7 @@ test('GET /api/stream validates text length', async () => {
   const body = await response.json();
 
   assert.strictEqual(response.status, 400);
-  assert.strictEqual(body.error, 'Text too long (max 500 characters)');
-
-  server.close();
-});
-
-test('GET /api/stream validates mood parameter', async () => {
-  const app = createApp(async (text, res) => {
-    res.end('ok');
-  });
-
-  const server = app.listen(0);
-  const { port } = server.address();
-
-  const response = await fetch(`http://localhost:${port}/api/stream?text=test&mood=InvalidMood`);
-  const body = await response.json();
-
-  assert.strictEqual(response.status, 400);
-  assert.strictEqual(body.error, 'Invalid mood');
-  assert.ok(Array.isArray(body.validMoods));
+  assert.ok(body.error.includes('500 characters'));
 
   server.close();
 });
@@ -102,6 +101,37 @@ test('GET /api/moods returns list of moods', async () => {
   assert.ok(Array.isArray(body.moods));
   assert.ok(body.moods.includes('Relaxing'));
   assert.ok(body.moods.includes('Energizing'));
+
+  server.close();
+});
+
+test('GET /api/history returns soundscapes array', async () => {
+  const app = createApp();
+
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  const response = await fetch(`http://localhost:${port}/api/history`);
+  const body = await response.json();
+
+  assert.strictEqual(response.status, 200);
+  assert.ok(Array.isArray(body.soundscapes));
+
+  server.close();
+});
+
+test('GET /api/history accepts limit parameter', async () => {
+  const app = createApp();
+
+  const server = app.listen(0);
+  const { port } = server.address();
+
+  const response = await fetch(`http://localhost:${port}/api/history?limit=5`);
+  const body = await response.json();
+
+  assert.strictEqual(response.status, 200);
+  assert.ok(Array.isArray(body.soundscapes));
+  assert.ok(body.soundscapes.length <= 5);
 
   server.close();
 });

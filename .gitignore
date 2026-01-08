@@ -31,3 +31,7 @@ coverage/
 tmp/
 temp/
 *.tmp
+
+# Backend storage and logs
+backend/logs/
+backend/storage/
