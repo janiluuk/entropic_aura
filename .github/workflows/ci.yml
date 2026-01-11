@@ -32,10 +32,11 @@ jobs:
     
     - name: Check backend can start
       run: |
-        timeout 10s npm run api &
+        npm run api &
+        API_PID=$!
         sleep 5
         curl -f http://localhost:3000/api/health || exit 1
-        pkill -f "node backend/server.js" || true
+        kill $API_PID || true
       
   lint:
     runs-on: ubuntu-latest

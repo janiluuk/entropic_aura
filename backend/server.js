@@ -15,8 +15,8 @@ function createApp(generateFn = generateAndStream, host = process.env.COMFY_HOST
   // Health check endpoint
   app.get('/api/health', async (req, res) => {
     const health = await checkComfyHealth(host);
-    const status = health.healthy ? 200 : 503;
-    res.status(status).json({
+    // Always return 200 - backend is healthy even if ComfyUI is unavailable
+    res.status(200).json({
       backend: 'ok',
       comfyui: health.healthy ? 'ok' : 'unavailable',
       error: health.error || null,
