@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
+const { promisify } = require('util');
 const { createApp } = require('../server');
 
 test('GET /api/stream returns stubbed audio', async () => {
@@ -18,11 +19,6 @@ test('GET /api/stream returns stubbed audio', async () => {
   assert.strictEqual(response.status, 200);
   assert.strictEqual(body, 'ok');
 
-  await new Promise((resolve, reject) => {
-    server.close((err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
+  await promisify(server.close.bind(server))();
 });
 
