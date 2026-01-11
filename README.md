@@ -45,7 +45,14 @@ binaries for transcoding. Build and start everything with:
 docker compose up --build
 ```
 
-## Tests
+1. Navigate in your repo folder: cd `k-aura_stabilizer`
+2. Install project dependencies: `npm install`
+3. Create a new .env file: `cp .env.example .env`
+4. `VUE_APP_BASE_URL` should contain the URL of your App
+ (eg. http://localhost:8080/)
+5. `VUE_APP_API_BASE_URL` should contain the URL of JSON-API server (eg. http://localhost:3000/api/v1)
+6. Run `npm run dev` to start the application in a local development environment or `npm run build` to build release distributables.
+7. In another terminal, launch the audio backend with `npm run api`.
 
 Integration tests for the backend live in `backend/test/`. Run them with:
 
@@ -59,3 +66,64 @@ The project does not persist data on the server. Audio is streamed directly
 from ComfyUI to the client and discarded after playback. Client‑side storage
 is not implemented beyond what the browser provides.
 
+```
+k-aura_stabilizer
+    ├── index.html 
+    ├── public
+    │   ├── layout
+    │   ├── themes
+    │   ├── favicon.png
+    │   └── index.html
+    ├── src
+    │   ├── assets
+    │   │   ├── css
+    │   │   ├── fonts
+    │   │   ├── img
+    │   │   ├── js
+    │   │   └── scss
+    │   ├── components (custom components)
+    |   |   └── component-name
+    |   ├── layouts (layout blocks)
+    |   ├── service (temporary mock data for UI dev)
+    |   ├── services (use only these to connect to API!)
+    │   ├── mixins
+    │   │   ├── formMixin.js
+    │   │   └── showSwal.js
+    │   ├── router
+    |   |    └── index.js
+    |   |    └── routes.js (extra routes)
+    │   ├── store
+    │   │   ├── auth.module.js
+    |   |   ├── index.js
+    |   |   |── modules
+    |   |   |    ├── module-name
+    |   |   |── services (extra services, deprecating)
+    │   │   └── profile.module.js
+    │   ├── views (naming e.g. Profile/EditProfie.vue)
+    │   │   ├── components
+    │   ├── App.vue
+    │   └── main.js
+    ├── .browserslistrc
+    ├── .whyareyoulookingatthis
+    ├── .eslintrc.js
+    ├── .gitignore
+    ├── babel.config.json
+    ├── vue.config.js
+    ├── webpack.config.js
+    ├── .env.example
+    ├── Dockerfile
+    ├── vite.config.js
+    ├── docker-compose.yml
+    ├── package.json
+    └── README.md
+
+### Backend
+
+An experimental Node.js helper lives in `backend/` and demonstrates how to
+call a local [ComfyUI](https://github.com/comfyanonymous/ComfyUI) server to
+generate audio and stream it through an FFmpeg filter chain. The helper now
+outputs AAC at 128 kbps and is served by `backend/server.js` on `/api/stream`.
+
+Visit [http://localhost:8080/soundscape](http://localhost:8080/soundscape) and
+click **Generate** to hear the streaming result in the built‑in audio player.
+Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
