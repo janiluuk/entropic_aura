@@ -16,6 +16,16 @@ async function cleanupTestFiles() {
   } catch {}
 }
 
+// Helper to properly close server
+function closeServer(server) {
+  return new Promise((resolve, reject) => {
+    server.close((err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 test('GET /api/tracks returns track pool status', async () => {
   const app = createApp();
   const server = app.listen(0);
@@ -29,7 +39,7 @@ test('GET /api/tracks returns track pool status', async () => {
   assert.ok(Array.isArray(body.tracks));
   assert.ok(typeof body.status.maxTracks === 'number');
 
-  server.close();
+  await closeServer(server);
 });
 
 test('POST /api/tracks creates a new track', async () => {
@@ -55,7 +65,7 @@ test('POST /api/tracks creates a new track', async () => {
   assert.strictEqual(body.track.mood, 'Relaxing');
   assert.strictEqual(body.track.volume, 0.8);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('POST /api/tracks respects max tracks limit', async () => {
@@ -83,7 +93,7 @@ test('POST /api/tracks respects max tracks limit', async () => {
   assert.strictEqual(response.status, 400);
   assert.ok(body.error.includes('Maximum tracks'));
 
-  server.close();
+  await closeServer(server);
 });
 
 test('GET /api/tracks/:id returns specific track', async () => {
@@ -107,7 +117,7 @@ test('GET /api/tracks/:id returns specific track', async () => {
   assert.ok(body.track);
   assert.strictEqual(body.track.id, track.id);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('PATCH /api/tracks/:id updates track', async () => {
@@ -135,7 +145,7 @@ test('PATCH /api/tracks/:id updates track', async () => {
   assert.strictEqual(body.track.state, 'ready');
   assert.strictEqual(body.track.volume, 0.5);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('DELETE /api/tracks/:id removes track', async () => {
@@ -162,7 +172,7 @@ test('DELETE /api/tracks/:id removes track', async () => {
   const getRes = await fetch(`http://localhost:${port}/api/tracks/${track.id}`);
   assert.strictEqual(getRes.status, 404);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('GET /api/presets returns all presets', async () => {
@@ -178,7 +188,7 @@ test('GET /api/presets returns all presets', async () => {
   assert.strictEqual(response.status, 200);
   assert.ok(Array.isArray(body.presets));
 
-  server.close();
+  await closeServer(server);
 });
 
 test('POST /api/presets creates a new preset', async () => {
@@ -209,7 +219,7 @@ test('POST /api/presets creates a new preset', async () => {
   assert.strictEqual(body.preset.name, 'Ocean Waves');
   assert.strictEqual(body.preset.mood, 'Relaxing');
 
-  server.close();
+  await closeServer(server);
 });
 
 test('GET /api/presets/:id returns specific preset', async () => {
@@ -235,7 +245,7 @@ test('GET /api/presets/:id returns specific preset', async () => {
   assert.strictEqual(body.preset.id, preset.id);
   assert.ok(body.preset.isFavorite !== undefined);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('PATCH /api/presets/:id updates preset', async () => {
@@ -265,7 +275,7 @@ test('PATCH /api/presets/:id updates preset', async () => {
   assert.strictEqual(body.preset.name, 'Updated');
   assert.strictEqual(body.preset.description, 'New description');
 
-  server.close();
+  await closeServer(server);
 });
 
 test('DELETE /api/presets/:id removes preset', async () => {
@@ -294,7 +304,7 @@ test('DELETE /api/presets/:id removes preset', async () => {
   const getRes = await fetch(`http://localhost:${port}/api/presets/${preset.id}`);
   assert.strictEqual(getRes.status, 404);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('POST /api/presets/:id/play increments play count', async () => {
@@ -324,7 +334,7 @@ test('POST /api/presets/:id/play increments play count', async () => {
   const body = await getRes.json();
   assert.strictEqual(body.preset.timesPlayed, 1);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('POST /api/favorites/:presetId adds to favorites', async () => {
@@ -355,7 +365,7 @@ test('POST /api/favorites/:presetId adds to favorites', async () => {
   assert.strictEqual(favBody.favorites.length, 1);
   assert.strictEqual(favBody.favorites[0].id, preset.id);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('DELETE /api/favorites/:presetId removes from favorites', async () => {
@@ -390,7 +400,7 @@ test('DELETE /api/favorites/:presetId removes from favorites', async () => {
   const favBody = await favRes.json();
   assert.strictEqual(favBody.favorites.length, 0);
 
-  server.close();
+  await closeServer(server);
 });
 
 test('GET /api/favorites returns all favorite presets', async () => {
@@ -426,7 +436,7 @@ test('GET /api/favorites returns all favorite presets', async () => {
   assert.strictEqual(response.status, 200);
   assert.strictEqual(body.favorites.length, 2);
 
-  server.close();
+  await closeServer(server);
 });
 
 // Cleanup

@@ -21,11 +21,11 @@ const {
 initStorage().catch(console.error);
 initPresetStorage().catch(console.error);
 
-// Global track manager instance
-const trackManager = new TrackManager(4);
-
 function createApp(generateFn = generateAndStream, host = process.env.COMFY_HOST || '127.0.0.1:8188') {
   const app = express();
+  
+  // Create a track manager instance for this app
+  const trackManager = new TrackManager(4);
   
   // Parse JSON bodies
   app.use(express.json());
