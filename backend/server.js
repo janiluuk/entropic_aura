@@ -14,6 +14,7 @@ function createApp(generateFn = generateAndStream) {
 
   // Health check endpoint
   app.get('/api/health', async (req, res) => {
+    const host = process.env.COMFY_HOST || '127.0.0.1:8188';
     const health = await checkComfyHealth(host);
     // Always return 200 - backend is healthy even if ComfyUI is unavailable
     res.status(200).json({
@@ -62,7 +63,7 @@ function createApp(generateFn = generateAndStream) {
     
     res.setHeader('Content-Type', 'audio/aac');
     try {
-      await generateFn(text, res, host, mood);
+      await generateFn(text, res, mood);
     } catch (err) {
       console.error('Error generating audio:', err);
       if (!res.headersSent) {

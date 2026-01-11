@@ -55,7 +55,7 @@ test('GET /api/stream validates text length', async () => {
 });
 
 test('GET /api/stream accepts valid mood parameter', async () => {
-  const app = createApp(async (text, res, host, mood) => {
+  const app = createApp(async (text, res, mood) => {
     assert.strictEqual(mood, 'Relaxing');
     res.end('ok');
   });
