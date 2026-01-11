@@ -30,6 +30,9 @@ async function initStorage() {
  * @returns {Promise<string>} - Soundscape ID
  */
 async function saveSoundscape(metadata) {
+  // Ensure storage is initialized
+  await initStorage();
+  
   const id = randomUUID();
   const timestamp = new Date().toISOString();
   
