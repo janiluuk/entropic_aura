@@ -56,11 +56,13 @@ async function setupVisualizer() {
     try {
       source = audioContext.createMediaElementSource(props.audio)
     } catch (err) {
-      // Source already exists for this element, just resume with new context
+      // Source already exists for this element, clean up and return
       console.warn('MediaElementSource already exists for this audio element')
       if (audioContext) {
         await audioContext.close()
+        audioContext = null
       }
+      analyser = null
       return
     }
     
