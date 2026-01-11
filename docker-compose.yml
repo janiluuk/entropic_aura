@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: k-aura-app
+    container_name: entropic-aura-app
     restart: always
     ports:
       - "8080:8080"
