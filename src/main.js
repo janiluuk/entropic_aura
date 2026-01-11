@@ -1,25 +1,19 @@
 import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import SoundscapeCreator from './views/SoundscapeCreator.vue'
+import { createPinia } from 'pinia'
+import router from './router'
 
-// Minimal router for the soundscape feature
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    {
-      path: '/',
-      redirect: '/soundscape'
-    },
-    {
-      path: '/soundscape',
-      component: SoundscapeCreator
-    }
-  ]
-})
+// Create a minimal App component since App.vue doesn't exist
+const App = {
+  template: `
+    <div id="app">
+      <router-view />
+    </div>
+  `
+}
 
-const app = createApp({
-  template: '<router-view />'
-})
+const app = createApp(App)
 
+app.use(createPinia())
 app.use(router)
+
 app.mount('#app')

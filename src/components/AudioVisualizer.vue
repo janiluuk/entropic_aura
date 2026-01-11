@@ -1,6 +1,6 @@
 <template>
   <div class="audio-visualizer">
-    <canvas ref="canvas" width="600" height="100"></canvas>
+    <canvas ref="canvas" :width="width" :height="height"></canvas>
   </div>
 </template>
 
@@ -8,7 +8,22 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 
 const props = defineProps({
-  audio: Object
+  audio: {
+    type: Object,
+    default: null
+  },
+  width: {
+    type: Number,
+    default: 600
+  },
+  height: {
+    type: Number,
+    default: 100
+  },
+  barColor: {
+    type: String,
+    default: '#42b983'
+  }
 })
 
 const canvas = ref(null)
@@ -18,78 +33,49 @@ let dataArray = null
 let animationId = null
 let source = null
 
-onMounted(() => {
-  if (props.audio) {
-    setupVisualizer()
-  }
-})
-
-watch(() => props.audio, (newAudio, oldAudio) => {
-  if (newAudio && newAudio !== oldAudio) {
-    setupVisualizer()
-  }
-})
-
-async function setupVisualizer() {
-  if (!canvas.value || !props.audio) return
+const initVisualizer = () => {
+  if (!props.audio || !canvas.value) return
 
   try {
-    // Cancel any ongoing animation
-    if (animationId) {
-      cancelAnimationFrame(animationId)
-      animationId = null
+    // Create audio context if it doesn't exist
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)()
     }
 
-    // If we're switching audio elements, disconnect and close old context
-    if (audioContext && source) {
-      source.disconnect()
-      await audioContext.close()
-      audioContext = null
-      source = null
-    }
-
-    // Create new audio context and source
-    audioContext = new (window.AudioContext || window.webkitAudioContext)()
+    // Create analyser node
     analyser = audioContext.createAnalyser()
-    
-    // Create source - will throw if already created for this element
-    try {
-      source = audioContext.createMediaElementSource(props.audio)
-    } catch (err) {
-      // Source already exists for this element, just resume with new context
-      console.warn('MediaElementSource already exists for this audio element')
-      if (audioContext) {
-        await audioContext.close()
-      }
-      return
-    }
-    
-    source.connect(analyser)
-    analyser.connect(audioContext.destination)
-    
     analyser.fftSize = 256
     const bufferLength = analyser.frequencyBinCount
     dataArray = new Uint8Array(bufferLength)
-    
+
+    // Connect audio element to analyser
+    if (!source) {
+      source = audioContext.createMediaElementSource(props.audio)
+      source.connect(analyser)
+      analyser.connect(audioContext.destination)
+    }
+
+    // Start visualization
     draw()
   } catch (error) {
-    console.error('Visualizer setup failed:', error)
+    console.error('Failed to initialize audio visualizer:', error)
   }
 }
 
-function draw() {
-  if (!canvas.value || !analyser) return
+const draw = () => {
+  if (!canvas.value || !analyser || !dataArray) return
+
+  const canvasCtx = canvas.value.getContext('2d')
+  const width = canvas.value.width
+  const height = canvas.value.height
 
   animationId = requestAnimationFrame(draw)
 
   analyser.getByteFrequencyData(dataArray)
 
-  const ctx = canvas.value.getContext('2d')
-  const width = canvas.value.width
-  const height = canvas.value.height
-
-  ctx.fillStyle = 'rgb(20, 20, 20)'
-  ctx.fillRect(0, 0, width, height)
+  // Clear canvas
+  canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  canvasCtx.fillRect(0, 0, width, height)
 
   const barWidth = (width / dataArray.length) * 2.5
   let barHeight
@@ -98,41 +84,70 @@ function draw() {
   for (let i = 0; i < dataArray.length; i++) {
     barHeight = (dataArray[i] / 255) * height
 
-    ctx.fillStyle = `rgb(${barHeight + 100}, 50, 150)`
-    ctx.fillRect(x, height - barHeight, barWidth, barHeight)
+    // Create gradient
+    const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height)
+    gradient.addColorStop(0, props.barColor)
+    gradient.addColorStop(1, 'rgba(66, 185, 131, 0.3)')
+
+    canvasCtx.fillStyle = gradient
+    canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight)
 
     x += barWidth + 1
   }
 }
 
-onUnmounted(async () => {
+const cleanup = () => {
   if (animationId) {
     cancelAnimationFrame(animationId)
     animationId = null
   }
-  if (source) {
-    source.disconnect()
-    source = null
-  }
-  if (audioContext) {
-    await audioContext.close()
+  if (audioContext && audioContext.state !== 'closed') {
+    audioContext.close()
     audioContext = null
   }
   analyser = null
+  source = null
   dataArray = null
+}
+
+// Watch for audio element changes
+watch(() => props.audio, (newAudio) => {
+  if (newAudio) {
+    cleanup()
+    // Wait for audio element to be ready
+    if (newAudio.readyState >= 2) {
+      initVisualizer()
+    } else {
+      newAudio.addEventListener('loadeddata', initVisualizer, { once: true })
+    }
+  }
+})
+
+onMounted(() => {
+  if (props.audio) {
+    initVisualizer()
+  }
+})
+
+onUnmounted(() => {
+  cleanup()
 })
 </script>
 
 <style scoped>
 .audio-visualizer {
-  margin: 1rem 0;
+  width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 1rem;
 }
 
 canvas {
-  border: 1px solid #333;
+  display: block;
   border-radius: 4px;
-  background: #1a1a1a;
 }
 </style>
