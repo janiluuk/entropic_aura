@@ -40,8 +40,9 @@ async function setupVisualizer() {
       animationId = null
     }
 
-    // If we're switching audio elements, close old context
+    // If we're switching audio elements, disconnect and close old context
     if (audioContext && source) {
+      source.disconnect()
       await audioContext.close()
       audioContext = null
       source = null
@@ -51,8 +52,18 @@ async function setupVisualizer() {
     audioContext = new (window.AudioContext || window.webkitAudioContext)()
     analyser = audioContext.createAnalyser()
     
-    // Create source only once per audio element
-    source = audioContext.createMediaElementSource(props.audio)
+    // Create source - will throw if already created for this element
+    try {
+      source = audioContext.createMediaElementSource(props.audio)
+    } catch (err) {
+      // Source already exists for this element, just resume with new context
+      console.warn('MediaElementSource already exists for this audio element')
+      if (audioContext) {
+        await audioContext.close()
+      }
+      return
+    }
+    
     source.connect(analyser)
     analyser.connect(audioContext.destination)
     
@@ -99,11 +110,14 @@ onUnmounted(async () => {
     cancelAnimationFrame(animationId)
     animationId = null
   }
+  if (source) {
+    source.disconnect()
+    source = null
+  }
   if (audioContext) {
     await audioContext.close()
     audioContext = null
   }
-  source = null
   analyser = null
   dataArray = null
 })
