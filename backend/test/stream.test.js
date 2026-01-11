@@ -3,8 +3,10 @@ const assert = require('node:assert');
 const { createApp } = require('../server');
 
 test('GET /api/stream returns stubbed audio', async () => {
-  const app = createApp(async (text, res) => {
-    res.end('ok');
+  const app = createApp({
+    generateFn: async (text, res) => {
+      res.end('ok');
+    }
   });
 
   const server = app.listen(0);
@@ -16,6 +18,11 @@ test('GET /api/stream returns stubbed audio', async () => {
   assert.strictEqual(response.status, 200);
   assert.strictEqual(body, 'ok');
 
-  server.close();
+  await new Promise((resolve, reject) => {
+    server.close((err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
 });
 

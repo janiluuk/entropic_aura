@@ -1,7 +1,8 @@
 const express = require('express');
 const { generateAndStream } = require('./comfyAudioClient');
 
-function createApp(generateFn = generateAndStream, host = process.env.COMFY_HOST || '127.0.0.1:8188') {
+function createApp(options = {}) {
+  const { generateFn = generateAndStream, host = process.env.COMFY_HOST || '127.0.0.1:8188' } = options;
   const app = express();
 
   app.get('/api/stream', async (req, res) => {
