@@ -1,10 +1,23 @@
 const test = require('node:test');
 const assert = require('node:assert');
+const { promisify } = require('util');
 const { createApp } = require('../server');
 
+// Helper to properly close server
+function closeServer(server) {
+  return new Promise((resolve, reject) => {
+    server.close((err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 test('GET /api/stream returns stubbed audio', async () => {
-  const app = createApp(async (text, res) => {
-    res.end('ok');
+  const app = createApp({
+    generateFn: async (text, res) => {
+      res.end('ok');
+    }
   });
 
   const server = app.listen(0);
@@ -20,8 +33,10 @@ test('GET /api/stream returns stubbed audio', async () => {
 });
 
 test('GET /api/stream requires text parameter', async () => {
-  const app = createApp(async (text, res) => {
-    res.end('ok');
+  const app = createApp({
+    generateFn: async (text, res) => {
+      res.end('ok');
+    }
   });
 
   const server = app.listen(0);
@@ -37,8 +52,10 @@ test('GET /api/stream requires text parameter', async () => {
 });
 
 test('GET /api/stream validates text length', async () => {
-  const app = createApp(async (text, res) => {
-    res.end('ok');
+  const app = createApp({
+    generateFn: async (text, res) => {
+      res.end('ok');
+    }
   });
 
   const server = app.listen(0);
