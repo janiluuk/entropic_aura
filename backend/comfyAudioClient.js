@@ -53,7 +53,7 @@ function bufferToStream(buffer) {
   return stream;
 }
 
-async function generateAndStream(text, res, host = '127.0.0.1:8188') {
+async function generateAndStream(text, res, host = process.env.COMFY_HOST || '127.0.0.1:8188') {
   const clientId = randomUUID();
   const prompt = buildPrompt(text);
 
