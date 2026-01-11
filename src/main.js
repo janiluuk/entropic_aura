@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import SoundscapeCreator from './views/SoundscapeCreator.vue'
 
+// Minimal router for the soundscape feature
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -11,7 +12,6 @@ const router = createRouter({
     },
     {
       path: '/soundscape',
-      name: 'SoundscapeCreator',
       component: SoundscapeCreator
     }
   ]

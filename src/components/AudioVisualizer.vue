@@ -33,11 +33,26 @@ function setupVisualizer() {
   if (!canvas.value || !props.audio) return
 
   try {
+    // Clean up existing context if any
+    if (audioContext) {
+      audioContext.close()
+      audioContext = null
+    }
+    if (animationId) {
+      cancelAnimationFrame(animationId)
+      animationId = null
+    }
+
     audioContext = new (window.AudioContext || window.webkitAudioContext)()
     analyser = audioContext.createAnalyser()
-    const source = audioContext.createMediaElementSource(props.audio)
     
-    source.connect(analyser)
+    // Check if source was already created for this element
+    if (!props.audio._audioSource) {
+      const source = audioContext.createMediaElementSource(props.audio)
+      props.audio._audioSource = source
+    }
+    
+    props.audio._audioSource.connect(analyser)
     analyser.connect(audioContext.destination)
     
     analyser.fftSize = 256
@@ -81,10 +96,14 @@ function draw() {
 onUnmounted(() => {
   if (animationId) {
     cancelAnimationFrame(animationId)
+    animationId = null
   }
   if (audioContext) {
     audioContext.close()
+    audioContext = null
   }
+  analyser = null
+  dataArray = null
 })
 </script>
 
