@@ -1,17 +1,17 @@
 {
-  "name": "k-aura-stabilizer",
+  "name": "entropic-aura",
   "version": "1.0.0",
   "private": true,
   "author": "Yani",
   "license": "",
-  "description": "Image AI app",
+  "description": "Live generated atmosphere audio streaming app using ComfyUI",
   "homepage": "",
   "bugs": {
-    "url": "https://github.com/janiluuk/k-aura_stabilizer/issues"
+    "url": "https://github.com/janiluuk/entropic_aura/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/janiluuk/k-aura_stabilizer.git"
+    "url": "git+https://github.com/janiluuk/entropic_aura.git"
   },
   "scripts": {
     "serve": "vite --cors --port 8080 --host --cors",

@@ -1,3 +1,32 @@
+# Entropic Aura
+
+**Entropic Aura** is a live generated atmosphere application that streams continuous audio to users. It uses ComfyUI as a backend to generate ambient soundscapes from presets or user prompts.
+
+## Features
+
+### Currently Implemented
+- **Live Audio Generation**: Generate atmospheric audio using ComfyUI backend
+- **Text Prompts**: Create soundscapes from text descriptions
+- **Mood Presets**: Quick selection of mood-based atmospheres (Relaxing, Energizing)
+- **Continuous Streaming**: Smooth audio playback via AAC streaming at 128 kbps
+
+### Planned Features
+- **Multi-Track Mixing**: 4 simultaneous audio tracks mixed together in real-time
+- **Preset Management**: Create, save, and manage custom atmosphere presets
+- **Favorites System**: Mark and quickly access favorite presets
+- **Playlist System**: Create playlists that rotate atmospheres at configurable intervals
+- **Smooth Transitions**: Seamless crossfading between different atmospheres
+
+## Architecture
+
+The application consists of:
+- **Frontend**: Vue 3 application with PrimeVue UI components
+- **Backend**: Node.js server (`backend/server.js`) that interfaces with ComfyUI
+- **ComfyUI Integration**: Text-to-audio generation via custom workflow
+- **FFmpeg Workers**: Scalable worker pool for audio transcoding (6 instances recommended)
+
+## Requirements
+
 ### Frontend app
 
 Requires a working local environment with NodeJS version 17.0 or above, npm, VueCLI.
@@ -25,11 +54,11 @@ docker compose up --build --scale ffmpeg-worker=6
 ```
 
 Each worker provides an FFmpeg binary used to transcode and stream audio in
-AAC at 128 kbps.
+AAC at 128 kbps.
 
 ## Installation
 
-1. Navigate in your repo folder: cd `k-aura_stabilizer`
+1. Navigate in your repo folder: cd `entropic_aura`
 2. Install project dependencies: `npm install`
 3. Create a new .env file: `cp .env.example .env`
 4. `VUE_APP_BASE_URL` should contain the URL of your App
@@ -40,49 +69,52 @@ AAC at 128 kbps.
 
 # Usage
 
-Register a user from `#/register` or login using pre-created users.
+Visit [http://localhost:8080/soundscape](http://localhost:8080/soundscape) and
+click **Generate** to hear the streaming result in the built‑in audio player.
+
+Register a user from `#/register` or login using pre-created users for other features.
 
 ### File Structure
 
 Within the download you'll find the following directories and files:
 
 ```
-k-aura_stabilizer
+entropic_aura
     ├── index.html 
     ├── public
-    │   ├── layout
-    │   ├── themes
-    │   ├── favicon.png
-    │   └── index.html
+    │   ├── layout
+    │   ├── themes
+    │   ├── favicon.png
+    │   └── index.html
     ├── src
-    │   ├── assets
-    │   │   ├── css
-    │   │   ├── fonts
-    │   │   ├── img
-    │   │   ├── js
-    │   │   └── scss
-    │   ├── components (custom components)
+    │   ├── assets
+    │   │   ├── css
+    │   │   ├── fonts
+    │   │   ├── img
+    │   │   ├── js
+    │   │   └── scss
+    │   ├── components (custom components)
     |   |   └── component-name
     |   ├── layouts (layout blocks)
     |   ├── service (temporary mock data for UI dev)
     |   ├── services (use only these to connect to API!)
-    │   ├── mixins
-    │   │   ├── formMixin.js
-    │   │   └── showSwal.js
-    │   ├── router
+    │   ├── mixins
+    │   │   ├── formMixin.js
+    │   │   └── showSwal.js
+    │   ├── router
     |   |    └── index.js
     |   |    └── routes.js (extra routes)
-    │   ├── store
-    │   │   ├── auth.module.js
+    │   ├── store
+    │   │   ├── auth.module.js
     |   |   ├── index.js
     |   |   |── modules
     |   |   |    ├── module-name
     |   |   |── services (extra services, deprecating)
-    │   │   └── profile.module.js
-    │   ├── views (naming e.g. Profile/EditProfie.vue)
-    │   │   ├── components
-    │   ├── App.vue
-    │   └── main.js
+    │   │   └── profile.module.js
+    │   ├── views (naming e.g. Profile/EditProfie.vue)
+    │   │   ├── components
+    │   ├── App.vue
+    │   └── main.js
     ├── .browserslistrc
     ├── .whyareyoulookingatthis
     ├── .eslintrc.js
@@ -96,14 +128,33 @@ k-aura_stabilizer
     ├── docker-compose.yml
     ├── package.json
     └── README.md
+```
 
 ### Backend
 
 An experimental Node.js helper lives in `backend/` and demonstrates how to
 call a local [ComfyUI](https://github.com/comfyanonymous/ComfyUI) server to
 generate audio and stream it through an FFmpeg filter chain. The helper now
-outputs AAC at 128 kbps and is served by `backend/server.js` on `/api/stream`.
+outputs AAC at 128 kbps and is served by `backend/server.js` on `/api/stream`.
 
 Visit [http://localhost:8080/soundscape](http://localhost:8080/soundscape) and
 click **Generate** to hear the streaming result in the built‑in audio player.
 Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
+
+## Roadmap
+
+### Phase 1: Core Audio Features (Completed)
+- ✅ Basic audio generation from prompts
+- ✅ ComfyUI integration
+- ✅ Streaming audio playback
+
+### Phase 2: Multi-Track System (Planned)
+- ⏳ Implement 4 simultaneous track generation
+- ⏳ Real-time audio mixing engine
+- ⏳ Crossfade transitions between tracks
+
+### Phase 3: User Experience (Planned)
+- ⏳ Preset creation and management system
+- ⏳ Favorites functionality
+- ⏳ Playlist builder with rotation intervals
+- ⏳ Enhanced audio visualization
