@@ -1,5 +1,36 @@
+# Dependencies
 node_modules/
-package-lock.json
+
+# Build outputs
 dist/
-.env
+build/
 *.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Backend storage and logs
+backend/logs/
+backend/storage/
