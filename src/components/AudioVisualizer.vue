@@ -16,8 +16,7 @@ let audioContext = null
 let analyser = null
 let dataArray = null
 let animationId = null
-// Use WeakMap to track audio sources without mutating props
-const audioSources = new WeakMap()
+let source = null
 
 onMounted(() => {
   if (props.audio) {
@@ -25,8 +24,8 @@ onMounted(() => {
   }
 })
 
-watch(() => props.audio, (newAudio) => {
-  if (newAudio) {
+watch(() => props.audio, (newAudio, oldAudio) => {
+  if (newAudio && newAudio !== oldAudio) {
     setupVisualizer()
   }
 })
@@ -35,26 +34,25 @@ async function setupVisualizer() {
   if (!canvas.value || !props.audio) return
 
   try {
-    // Clean up existing context if any
-    if (audioContext) {
-      await audioContext.close()
-      audioContext = null
-    }
+    // Cancel any ongoing animation
     if (animationId) {
       cancelAnimationFrame(animationId)
       animationId = null
     }
 
+    // If we're switching audio elements, close old context
+    if (audioContext && source) {
+      await audioContext.close()
+      audioContext = null
+      source = null
+    }
+
+    // Create new audio context and source
     audioContext = new (window.AudioContext || window.webkitAudioContext)()
     analyser = audioContext.createAnalyser()
     
-    // Check if source was already created for this element
-    let source = audioSources.get(props.audio)
-    if (!source) {
-      source = audioContext.createMediaElementSource(props.audio)
-      audioSources.set(props.audio, source)
-    }
-    
+    // Create source only once per audio element
+    source = audioContext.createMediaElementSource(props.audio)
     source.connect(analyser)
     analyser.connect(audioContext.destination)
     
@@ -105,6 +103,7 @@ onUnmounted(async () => {
     await audioContext.close()
     audioContext = null
   }
+  source = null
   analyser = null
   dataArray = null
 })
