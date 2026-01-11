@@ -16,6 +16,8 @@ let audioContext = null
 let analyser = null
 let dataArray = null
 let animationId = null
+// Use WeakMap to track audio sources without mutating props
+const audioSources = new WeakMap()
 
 onMounted(() => {
   if (props.audio) {
@@ -29,13 +31,13 @@ watch(() => props.audio, (newAudio) => {
   }
 })
 
-function setupVisualizer() {
+async function setupVisualizer() {
   if (!canvas.value || !props.audio) return
 
   try {
     // Clean up existing context if any
     if (audioContext) {
-      audioContext.close()
+      await audioContext.close()
       audioContext = null
     }
     if (animationId) {
@@ -47,12 +49,13 @@ function setupVisualizer() {
     analyser = audioContext.createAnalyser()
     
     // Check if source was already created for this element
-    if (!props.audio._audioSource) {
-      const source = audioContext.createMediaElementSource(props.audio)
-      props.audio._audioSource = source
+    let source = audioSources.get(props.audio)
+    if (!source) {
+      source = audioContext.createMediaElementSource(props.audio)
+      audioSources.set(props.audio, source)
     }
     
-    props.audio._audioSource.connect(analyser)
+    source.connect(analyser)
     analyser.connect(audioContext.destination)
     
     analyser.fftSize = 256
@@ -93,13 +96,13 @@ function draw() {
   }
 }
 
-onUnmounted(() => {
+onUnmounted(async () => {
   if (animationId) {
     cancelAnimationFrame(animationId)
     animationId = null
   }
   if (audioContext) {
-    audioContext.close()
+    await audioContext.close()
     audioContext = null
   }
   analyser = null
