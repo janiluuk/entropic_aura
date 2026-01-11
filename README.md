@@ -7,15 +7,18 @@
 ### Currently Implemented
 - **Live Audio Generation**: Generate atmospheric audio using ComfyUI backend
 - **Text Prompts**: Create soundscapes from text descriptions
-- **Mood Presets**: Quick selection of mood-based atmospheres (Relaxing, Energizing)
+- **Mood Presets**: Quick selection of mood-based atmospheres (Relaxing, Energizing, Peaceful, Dark, Cinematic, Nature)
 - **Continuous Streaming**: Smooth audio playback via AAC streaming at 128 kbps
+- **Multi-Track System**: 4 simultaneous audio tracks with independent generation and volume control
+- **Preset Management**: Create, save, edit, and manage custom atmosphere presets
+- **Favorites System**: Mark and quickly access favorite presets
+- **Playback History**: Track and review recently generated soundscapes
 
 ### Planned Features
-- **Multi-Track Mixing**: 4 simultaneous audio tracks mixed together in real-time
-- **Preset Management**: Create, save, and manage custom atmosphere presets
-- **Favorites System**: Mark and quickly access favorite presets
+- **Real-Time Audio Mixing**: Mix 4 tracks together with dynamic crossfading
 - **Playlist System**: Create playlists that rotate atmospheres at configurable intervals
 - **Smooth Transitions**: Seamless crossfading between different atmospheres
+- **Enhanced Audio Visualization**: Visual representation of multi-track audio
 
 ## Architecture
 
@@ -86,10 +89,169 @@ docker compose up --build
 
 Integration tests for the backend live in `backend/test/`. Run them with:
 
+```bash
+npm test
+```
+
 Visit [http://localhost:8080/soundscape](http://localhost:8080/soundscape) and
 click **Generate** to hear the streaming result in the built‑in audio player.
 
 Register a user from `#/register` or login using pre-created users for other features.
+
+## API Reference
+
+### Audio Streaming
+
+#### `GET /api/stream`
+Stream generated audio based on text prompt and mood.
+
+**Query Parameters:**
+- `text` (required): Text prompt for audio generation (max 500 characters)
+- `mood` (optional): Mood preset (Relaxing, Energizing, Peaceful, Dark, Cinematic, Nature)
+
+**Response:** Audio stream (AAC, 128 kbps)
+
+### Track Management
+
+#### `GET /api/tracks`
+Get all tracks and track pool status.
+
+**Response:**
+```json
+{
+  "status": {
+    "totalTracks": 2,
+    "activeTracks": 2,
+    "maxTracks": 4,
+    "canAddTrack": true,
+    "tracksByState": {
+      "generating": 1,
+      "ready": 1,
+      "playing": 0,
+      "fading": 0,
+      "expired": 0
+    }
+  },
+  "tracks": [...]
+}
+```
+
+#### `POST /api/tracks`
+Create a new audio track.
+
+**Request Body:**
+```json
+{
+  "prompt": "peaceful forest sounds",
+  "mood": "Relaxing",
+  "volume": 0.8,
+  "duration": 45
+}
+```
+
+**Response:** `201 Created` with track object
+
+#### `GET /api/tracks/:id`
+Get specific track by ID.
+
+#### `PATCH /api/tracks/:id`
+Update track state or volume.
+
+**Request Body:**
+```json
+{
+  "state": "ready",
+  "volume": 0.5
+}
+```
+
+#### `DELETE /api/tracks/:id`
+Remove track from pool.
+
+### Preset Management
+
+#### `GET /api/presets`
+Get all presets with optional filters.
+
+**Query Parameters:**
+- `mood`: Filter by mood
+- `tag`: Filter by tag
+- `search`: Search in name, description, and prompt
+- `sortBy`: Sort by `popular` or default (creation date)
+
+**Response:**
+```json
+{
+  "presets": [
+    {
+      "id": "uuid",
+      "name": "Ocean Waves",
+      "description": "Peaceful ocean sounds",
+      "prompt": "gentle ocean waves on beach",
+      "mood": "Relaxing",
+      "tags": ["nature", "ocean"],
+      "parameters": { "duration": 45 },
+      "createdAt": "2026-01-11T00:00:00.000Z",
+      "updatedAt": "2026-01-11T00:00:00.000Z",
+      "timesPlayed": 5,
+      "isFavorite": true
+    }
+  ]
+}
+```
+
+#### `POST /api/presets`
+Create a new preset.
+
+**Request Body:**
+```json
+{
+  "name": "Forest Ambience",
+  "description": "Peaceful forest with birds",
+  "prompt": "forest with birdsong",
+  "mood": "Nature",
+  "tags": ["nature", "forest", "birds"]
+}
+```
+
+**Response:** `201 Created` with preset object
+
+#### `GET /api/presets/:id`
+Get specific preset by ID.
+
+#### `PATCH /api/presets/:id`
+Update preset fields.
+
+#### `DELETE /api/presets/:id`
+Delete preset.
+
+#### `POST /api/presets/:id/play`
+Increment play count for preset.
+
+### Favorites
+
+#### `GET /api/favorites`
+Get all favorite presets.
+
+#### `POST /api/favorites/:presetId`
+Add preset to favorites.
+
+#### `DELETE /api/favorites/:presetId`
+Remove preset from favorites.
+
+### Other Endpoints
+
+#### `GET /api/health`
+Health check for backend and ComfyUI.
+
+#### `GET /api/moods`
+Get list of available mood presets.
+
+#### `GET /api/history`
+Get recent soundscape generation history.
+
+**Query Parameters:**
+- `limit` (optional): Maximum number of items to return (default: 10)
 
 ## Storage
 
@@ -166,14 +328,27 @@ Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
 - ✅ Basic audio generation from prompts
 - ✅ ComfyUI integration
 - ✅ Streaming audio playback
+- ✅ Mood-based audio filtering
+- ✅ Playback history tracking
 
-### Phase 2: Multi-Track System (Planned)
-- ⏳ Implement 4 simultaneous track generation
+### Phase 2: Multi-Track System (Completed)
+- ✅ Implement 4 simultaneous track generation
+- ✅ Track state management (generating, ready, playing, fading, expired)
+- ✅ Individual track volume control
 - ⏳ Real-time audio mixing engine
 - ⏳ Crossfade transitions between tracks
 
-### Phase 3: User Experience (Planned)
-- ⏳ Preset creation and management system
-- ⏳ Favorites functionality
+### Phase 3: User Experience (Completed)
+- ✅ Preset creation and management system
+- ✅ Favorites functionality
+- ✅ Search and filter presets
+- ✅ Play count tracking
 - ⏳ Playlist builder with rotation intervals
 - ⏳ Enhanced audio visualization
+
+### Phase 4: Advanced Features (Planned)
+- ⏳ Real-time audio mixing with crossfading
+- ⏳ Playlist automation and scheduling
+- ⏳ Audio visualization components
+- ⏳ User settings and preferences
+- ⏳ Export/import presets and playlists
