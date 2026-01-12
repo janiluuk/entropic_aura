@@ -75,14 +75,39 @@ async function createPreset(presetData) {
     timesPlayed: 0
   };
   
-  // Read existing presets
-  const presets = await safeReadJSON(PRESETS_FILE, []);
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = 3;
+  const retryDelay = 50; // ms
   
-  // Add new preset
-  presets.push(preset);
-  
-  // Write back
-  await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      // Read existing presets
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      
+      // Add new preset
+      presets.push(preset);
+      
+      // Write back
+      await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
+      
+      // Verify write by reading back
+      const verification = await safeReadJSON(PRESETS_FILE, []);
+      if (verification.some(p => p.id === preset.id)) {
+        return preset;
+      }
+      
+      // If verification failed and not last attempt, retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        throw error;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
   
   return preset;
 }
@@ -150,28 +175,46 @@ async function getPresetById(id) {
  * @returns {Promise<Object|null>} Updated preset or null
  */
 async function updatePreset(id, updates) {
-  try {
-    await initPresetStorage();
-    const presets = await safeReadJSON(PRESETS_FILE, []);
-    
-    const index = presets.findIndex(p => p.id === id);
-    if (index === -1) return null;
-    
-    // Merge updates
-    presets[index] = {
-      ...presets[index],
-      ...updates,
-      id: presets[index].id, // Preserve ID
-      createdAt: presets[index].createdAt, // Preserve creation date
-      updatedAt: new Date().toISOString()
-    };
-    
-    await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
-    
-    return presets[index];
-  } catch (error) {
-    return null;
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = 3;
+  const retryDelay = 50; // ms
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      
+      const index = presets.findIndex(p => p.id === id);
+      if (index === -1) {
+        // If not found and not the last attempt, retry after a delay
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        return null;
+      }
+      
+      // Merge updates
+      presets[index] = {
+        ...presets[index],
+        ...updates,
+        id: presets[index].id, // Preserve ID
+        createdAt: presets[index].createdAt, // Preserve creation date
+        updatedAt: new Date().toISOString()
+      };
+      
+      await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
+      
+      return presets[index];
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return null;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
+  
+  return null;
 }
 
 /**
