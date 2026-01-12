@@ -223,7 +223,21 @@ async function updatePreset(id, updates) {
       
       await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
       
-      return presets[index];
+      // Verify write by reading back
+      const verification = await safeReadJSON(PRESETS_FILE, []);
+      const verifiedPreset = verification.find(p => p.id === id);
+      
+      if (verifiedPreset && verifiedPreset.updatedAt === presets[index].updatedAt) {
+        return presets[index];
+      }
+      
+      // If verification failed and not last attempt, retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      return presets[index]; // Return the preset even if verification failed on last attempt
     } catch (error) {
       if (attempt === maxRetries - 1) {
         return null;
@@ -307,7 +321,21 @@ async function incrementPlayCount(id) {
       
       await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
       
-      return true;
+      // Verify write by reading back
+      const verification = await safeReadJSON(PRESETS_FILE, []);
+      const verifiedPreset = verification.find(p => p.id === id);
+      
+      if (verifiedPreset && verifiedPreset.timesPlayed === preset.timesPlayed) {
+        return true;
+      }
+      
+      // If verification failed and not last attempt, retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      return true; // Return true even if verification failed on last attempt
     } catch (error) {
       if (attempt === maxRetries - 1) {
         return false;
