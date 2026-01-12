@@ -237,10 +237,11 @@ async function reorderPlaylistPresets(playlistId, presetIds) {
     const playlist = playlists.find(p => p.id === playlistId);
     if (!playlist) return false;
     
-    // Validate that all presetIds exist in the playlist
+    // Validate that all presetIds exist in the playlist and lengths match
     const existingIds = new Set(playlist.presets.map(p => p.presetId));
-    if (!presetIds.every(id => existingIds.has(id))) {
-      return false; // Invalid preset IDs
+    if (presetIds.length !== playlist.presets.length || 
+        !presetIds.every(id => existingIds.has(id))) {
+      return false; // Invalid preset IDs or incomplete list
     }
     
     // Reorder presets

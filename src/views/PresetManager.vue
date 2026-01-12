@@ -92,6 +92,7 @@ async function playPreset(preset) {
   } catch (err) {
     error.value = 'Failed to generate audio'
     loading.value = false
+    currentPreset.value = null
   }
 }
 

@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineProps, defineEmits } from 'vue'
+import { ref, computed, onMounted, watch, defineProps, defineEmits } from 'vue'
 import PresetCard from './PresetCard.vue'
 
 const props = defineProps({
@@ -89,6 +89,11 @@ const sortBy = ref('')
 const loading = ref(false)
 const error = ref('')
 
+// Watch for changes to filters and refetch
+watch([filterMood, sortBy], () => {
+  fetchPresets()
+})
+
 const filteredPresets = computed(() => {
   let filtered = presets.value
 
@@ -105,6 +110,16 @@ const filteredPresets = computed(() => {
   // Filter by mood
   if (filterMood.value) {
     filtered = filtered.filter(p => p.mood === filterMood.value)
+  }
+
+  // Apply sorting
+  if (sortBy.value === 'popular') {
+    filtered = [...filtered].sort((a, b) => b.timesPlayed - a.timesPlayed)
+  } else {
+    // Default: newest first
+    filtered = [...filtered].sort((a, b) => 
+      new Date(b.createdAt) - new Date(a.createdAt)
+    )
   }
 
   return filtered

@@ -299,6 +299,21 @@ test('reorderPlaylistPresets returns false for invalid preset IDs', async () => 
   assert.strictEqual(success, false);
 });
 
+test('reorderPlaylistPresets returns false for incomplete preset list', async () => {
+  await cleanupTestFiles();
+  
+  const playlist = await createPlaylist({ name: 'Test' });
+  
+  await addPresetToPlaylist(playlist.id, 'preset-1');
+  await addPresetToPlaylist(playlist.id, 'preset-2');
+  await addPresetToPlaylist(playlist.id, 'preset-3');
+  
+  // Only providing 2 of 3 presets
+  const success = await reorderPlaylistPresets(playlist.id, ['preset-1', 'preset-2']);
+  
+  assert.strictEqual(success, false);
+});
+
 test('reorderPlaylistPresets returns false for non-existent playlist', async () => {
   await cleanupTestFiles();
   
