@@ -117,6 +117,7 @@ async function getAllPresets(filters = {}) {
  */
 async function getPresetById(id) {
   try {
+    await initPresetStorage();
     const data = await fs.readFile(PRESETS_FILE, 'utf-8');
     const presets = JSON.parse(data);
     return presets.find(p => p.id === id) || null;
@@ -133,6 +134,7 @@ async function getPresetById(id) {
  */
 async function updatePreset(id, updates) {
   try {
+    await initPresetStorage();
     const data = await fs.readFile(PRESETS_FILE, 'utf-8');
     const presets = JSON.parse(data);
     
@@ -163,6 +165,7 @@ async function updatePreset(id, updates) {
  */
 async function deletePreset(id) {
   try {
+    await initPresetStorage();
     const data = await fs.readFile(PRESETS_FILE, 'utf-8');
     const presets = JSON.parse(data);
     
@@ -190,6 +193,7 @@ async function deletePreset(id) {
  */
 async function incrementPlayCount(id) {
   try {
+    await initPresetStorage();
     const data = await fs.readFile(PRESETS_FILE, 'utf-8');
     const presets = JSON.parse(data);
     
@@ -244,6 +248,7 @@ async function addFavorite(presetId) {
  */
 async function removeFavorite(presetId) {
   try {
+    await initPresetStorage();
     const data = await fs.readFile(FAVORITES_FILE, 'utf-8');
     const favorites = JSON.parse(data);
     
@@ -287,6 +292,7 @@ async function getFavorites() {
  */
 async function isFavorite(presetId) {
   try {
+    await initPresetStorage();
     const data = await fs.readFile(FAVORITES_FILE, 'utf-8');
     const favorites = JSON.parse(data);
     return favorites.includes(presetId);
