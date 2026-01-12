@@ -27,10 +27,13 @@ const {
   removePresetFromPlaylist,
   reorderPlaylistPresets
 } = require('./utils/playlists');
+const { seedDefaultPresets } = require('./utils/seed');
 
 // Initialize storage on module load
 initStorage().catch(console.error);
-initPresetStorage().catch(console.error);
+initPresetStorage()
+  .then(() => seedDefaultPresets())
+  .catch(console.error);
 initPlaylistStorage().catch(console.error);
 
 function createApp(generateFn = generateAndStream) {
