@@ -1,23 +1,10 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { promisify } = require('util');
 const { createApp } = require('../server');
 
-// Helper to properly close server
-function closeServer(server) {
-  return new Promise((resolve, reject) => {
-    server.close((err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
-
 test('GET /api/stream returns stubbed audio', async () => {
-  const app = createApp({
-    generateFn: async (text, res) => {
-      res.end('ok');
-    }
+  const app = createApp(async (text, res) => {
+    res.end('ok');
   });
 
   const server = app.listen(0);
@@ -29,14 +16,12 @@ test('GET /api/stream returns stubbed audio', async () => {
   assert.strictEqual(response.status, 200);
   assert.strictEqual(body, 'ok');
 
-  await closeServer(server);
+  await new Promise((resolve) => server.close(resolve));
 });
 
 test('GET /api/stream requires text parameter', async () => {
-  const app = createApp({
-    generateFn: async (text, res) => {
-      res.end('ok');
-    }
+  const app = createApp(async (text, res) => {
+    res.end('ok');
   });
 
   const server = app.listen(0);
@@ -48,14 +33,12 @@ test('GET /api/stream requires text parameter', async () => {
   assert.strictEqual(response.status, 400);
   assert.ok(body.error.includes('required'));
 
-  await closeServer(server);
+  await new Promise((resolve) => server.close(resolve));
 });
 
 test('GET /api/stream validates text length', async () => {
-  const app = createApp({
-    generateFn: async (text, res) => {
-      res.end('ok');
-    }
+  const app = createApp(async (text, res) => {
+    res.end('ok');
   });
 
   const server = app.listen(0);
@@ -68,15 +51,13 @@ test('GET /api/stream validates text length', async () => {
   assert.strictEqual(response.status, 400);
   assert.ok(body.error.includes('500 characters'));
 
-  await closeServer(server);
+  await new Promise((resolve) => server.close(resolve));
 });
 
 test('GET /api/stream accepts valid mood parameter', async () => {
-  const app = createApp({
-    generateFn: async (text, res, host, mood) => {
-      assert.strictEqual(mood, 'Relaxing');
-      res.end('ok');
-    }
+  const app = createApp(async (text, res, mood) => {
+    assert.strictEqual(mood, 'Relaxing');
+    res.end('ok');
   });
 
   const server = app.listen(0);
@@ -88,7 +69,7 @@ test('GET /api/stream accepts valid mood parameter', async () => {
   assert.strictEqual(response.status, 200);
   assert.strictEqual(body, 'ok');
 
-  await closeServer(server);
+  await new Promise((resolve) => server.close(resolve));
 });
 
 test('GET /api/health returns health status', async () => {
@@ -104,7 +85,7 @@ test('GET /api/health returns health status', async () => {
   assert.ok(['ok', 'unavailable'].includes(body.comfyui));
   assert.ok(body.timestamp);
 
-  await closeServer(server);
+  await new Promise((resolve) => server.close(resolve));
 });
 
 test('GET /api/moods returns list of moods', async () => {
@@ -121,7 +102,7 @@ test('GET /api/moods returns list of moods', async () => {
   assert.ok(body.moods.includes('Relaxing'));
   assert.ok(body.moods.includes('Energizing'));
 
-  await closeServer(server);
+  await new Promise((resolve) => server.close(resolve));
 });
 
 test('GET /api/history returns soundscapes array', async () => {
@@ -136,7 +117,7 @@ test('GET /api/history returns soundscapes array', async () => {
   assert.strictEqual(response.status, 200);
   assert.ok(Array.isArray(body.soundscapes));
 
-  await closeServer(server);
+  await new Promise((resolve) => server.close(resolve));
 });
 
 test('GET /api/history accepts limit parameter', async () => {
@@ -152,6 +133,6 @@ test('GET /api/history accepts limit parameter', async () => {
   assert.ok(Array.isArray(body.soundscapes));
   assert.ok(body.soundscapes.length <= 5);
 
-  await closeServer(server);
+  await new Promise((resolve) => server.close(resolve));
 });
 
