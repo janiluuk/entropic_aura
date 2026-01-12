@@ -16,10 +16,22 @@ const {
   getFavorites,
   isFavorite
 } = require('./utils/presets');
+const {
+  initPlaylistStorage,
+  createPlaylist,
+  getAllPlaylists,
+  getPlaylistById,
+  updatePlaylist,
+  deletePlaylist,
+  addPresetToPlaylist,
+  removePresetFromPlaylist,
+  reorderPlaylistPresets
+} = require('./utils/playlists');
 
 // Initialize storage on module load
 initStorage().catch(console.error);
 initPresetStorage().catch(console.error);
+initPlaylistStorage().catch(console.error);
 
 function createApp(generateFn = generateAndStream) {
   const app = express();
@@ -269,6 +281,120 @@ function createApp(generateFn = generateAndStream) {
     } catch (error) {
       console.error('Error removing favorite:', error);
       res.status(500).json({ error: 'Failed to remove favorite' });
+    }
+  });
+
+  // Playlist Management Endpoints
+  
+  // Get all playlists
+  app.get('/api/playlists', async (req, res) => {
+    try {
+      const { search } = req.query;
+      const playlists = await getAllPlaylists({ search });
+      res.json({ playlists });
+    } catch (error) {
+      console.error('Error fetching playlists:', error);
+      res.status(500).json({ error: 'Failed to fetch playlists' });
+    }
+  });
+  
+  // Create a new playlist
+  app.post('/api/playlists', async (req, res) => {
+    try {
+      const playlist = await createPlaylist(req.body);
+      res.status(201).json({ playlist });
+    } catch (error) {
+      console.error('Error creating playlist:', error);
+      res.status(500).json({ error: 'Failed to create playlist' });
+    }
+  });
+  
+  // Get specific playlist
+  app.get('/api/playlists/:id', async (req, res) => {
+    try {
+      const playlist = await getPlaylistById(req.params.id);
+      if (!playlist) {
+        return res.status(404).json({ error: 'Playlist not found' });
+      }
+      res.json({ playlist });
+    } catch (error) {
+      console.error('Error fetching playlist:', error);
+      res.status(500).json({ error: 'Failed to fetch playlist' });
+    }
+  });
+  
+  // Update playlist
+  app.patch('/api/playlists/:id', async (req, res) => {
+    try {
+      const playlist = await updatePlaylist(req.params.id, req.body);
+      if (!playlist) {
+        return res.status(404).json({ error: 'Playlist not found' });
+      }
+      res.json({ playlist });
+    } catch (error) {
+      console.error('Error updating playlist:', error);
+      res.status(500).json({ error: 'Failed to update playlist' });
+    }
+  });
+  
+  // Delete playlist
+  app.delete('/api/playlists/:id', async (req, res) => {
+    try {
+      const success = await deletePlaylist(req.params.id);
+      if (!success) {
+        return res.status(404).json({ error: 'Playlist not found' });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting playlist:', error);
+      res.status(500).json({ error: 'Failed to delete playlist' });
+    }
+  });
+  
+  // Add preset to playlist
+  app.post('/api/playlists/:id/presets', async (req, res) => {
+    try {
+      const { presetId, duration, order } = req.body;
+      const success = await addPresetToPlaylist(req.params.id, presetId, { duration, order });
+      if (!success) {
+        return res.status(400).json({ error: 'Failed to add preset to playlist' });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error adding preset to playlist:', error);
+      res.status(500).json({ error: 'Failed to add preset to playlist' });
+    }
+  });
+  
+  // Remove preset from playlist
+  app.delete('/api/playlists/:id/presets/:presetId', async (req, res) => {
+    try {
+      const success = await removePresetFromPlaylist(req.params.id, req.params.presetId);
+      if (!success) {
+        return res.status(404).json({ error: 'Preset not found in playlist' });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error removing preset from playlist:', error);
+      res.status(500).json({ error: 'Failed to remove preset from playlist' });
+    }
+  });
+  
+  // Reorder presets in playlist
+  app.put('/api/playlists/:id/reorder', async (req, res) => {
+    try {
+      const { presetIds } = req.body;
+      if (!Array.isArray(presetIds)) {
+        return res.status(400).json({ error: 'presetIds must be an array' });
+      }
+      const success = await reorderPlaylistPresets(req.params.id, presetIds);
+      if (!success) {
+        return res.status(400).json({ error: 'Failed to reorder presets' });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error reordering playlist presets:', error);
+      res.status(500).json({ error: 'Failed to reorder presets' });
     }
   });
 
