@@ -159,13 +159,31 @@ async function getAllPresets(filters = {}) {
  * @returns {Promise<Object|null>} Preset or null
  */
 async function getPresetById(id) {
-  try {
-    await initPresetStorage();
-    const presets = await safeReadJSON(PRESETS_FILE, []);
-    return presets.find(p => p.id === id) || null;
-  } catch (error) {
-    return null;
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = 3;
+  const retryDelay = 50; // ms
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      const preset = presets.find(p => p.id === id);
+      
+      if (preset || attempt === maxRetries - 1) {
+        return preset || null;
+      }
+      
+      // If not found and not the last attempt, retry after a delay
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return null;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
+  
+  return null;
 }
 
 /**
@@ -223,25 +241,41 @@ async function updatePreset(id, updates) {
  * @returns {Promise<boolean>} Success
  */
 async function deletePreset(id) {
-  try {
-    await initPresetStorage();
-    const presets = await safeReadJSON(PRESETS_FILE, []);
-    
-    const filtered = presets.filter(p => p.id !== id);
-    
-    if (filtered.length === presets.length) {
-      return false; // Not found
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = 3;
+  const retryDelay = 50; // ms
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      
+      const filtered = presets.filter(p => p.id !== id);
+      
+      if (filtered.length === presets.length) {
+        // Not found - retry if not last attempt
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        return false;
+      }
+      
+      await fs.writeFile(PRESETS_FILE, JSON.stringify(filtered, null, 2));
+      
+      // Also remove from favorites
+      await removeFavorite(id);
+      
+      return true;
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
     }
-    
-    await fs.writeFile(PRESETS_FILE, JSON.stringify(filtered, null, 2));
-    
-    // Also remove from favorites
-    await removeFavorite(id);
-    
-    return true;
-  } catch (error) {
-    return false;
   }
+  
+  return false;
 }
 
 /**
@@ -250,21 +284,39 @@ async function deletePreset(id) {
  * @returns {Promise<boolean>} Success
  */
 async function incrementPlayCount(id) {
-  try {
-    await initPresetStorage();
-    const presets = await safeReadJSON(PRESETS_FILE, []);
-    
-    const preset = presets.find(p => p.id === id);
-    if (!preset) return false;
-    
-    preset.timesPlayed = (preset.timesPlayed || 0) + 1;
-    
-    await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
-    
-    return true;
-  } catch (error) {
-    return false;
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = 3;
+  const retryDelay = 50; // ms
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      
+      const preset = presets.find(p => p.id === id);
+      if (!preset) {
+        // Not found - retry if not last attempt
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        return false;
+      }
+      
+      preset.timesPlayed = (preset.timesPlayed || 0) + 1;
+      
+      await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
+      
+      return true;
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
+  
+  return false;
 }
 
 /**
