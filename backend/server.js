@@ -32,7 +32,12 @@ const { seedDefaultPresets } = require('./utils/seed');
 // Initialize storage on module load
 initStorage().catch(console.error);
 initPresetStorage()
-  .then(() => seedDefaultPresets())
+  .then(() => {
+    // Only seed in non-test environments
+    if (process.env.NODE_ENV !== 'test') {
+      return seedDefaultPresets();
+    }
+  })
   .catch(console.error);
 initPlaylistStorage().catch(console.error);
 
