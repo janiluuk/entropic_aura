@@ -6,6 +6,26 @@ const PRESETS_FILE = path.join(__dirname, '../storage/presets.json');
 const FAVORITES_FILE = path.join(__dirname, '../storage/favorites.json');
 
 /**
+ * Safely read and parse JSON file with fallback
+ * @param {string} filePath - Path to JSON file
+ * @param {*} defaultValue - Default value if parsing fails
+ * @returns {Promise<*>} Parsed data or default value
+ */
+async function safeReadJSON(filePath, defaultValue = []) {
+  try {
+    const data = await fs.readFile(filePath, 'utf-8');
+    // Handle empty or whitespace-only files
+    if (!data || data.trim().length === 0) {
+      return defaultValue;
+    }
+    return JSON.parse(data);
+  } catch (error) {
+    // Return default value on any error (file not found, parse error, etc.)
+    return defaultValue;
+  }
+}
+
+/**
  * Initialize preset storage
  */
 async function initPresetStorage() {
@@ -56,8 +76,7 @@ async function createPreset(presetData) {
   };
   
   // Read existing presets
-  const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-  const presets = JSON.parse(data);
+  const presets = await safeReadJSON(PRESETS_FILE, []);
   
   // Add new preset
   presets.push(preset);
@@ -76,8 +95,7 @@ async function createPreset(presetData) {
 async function getAllPresets(filters = {}) {
   try {
     await initPresetStorage();
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    let presets = JSON.parse(data);
+    let presets = await safeReadJSON(PRESETS_FILE, []);
     
     // Apply filters
     if (filters.mood) {
@@ -118,8 +136,7 @@ async function getAllPresets(filters = {}) {
 async function getPresetById(id) {
   try {
     await initPresetStorage();
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const presets = JSON.parse(data);
+    const presets = await safeReadJSON(PRESETS_FILE, []);
     return presets.find(p => p.id === id) || null;
   } catch (error) {
     return null;
@@ -135,8 +152,7 @@ async function getPresetById(id) {
 async function updatePreset(id, updates) {
   try {
     await initPresetStorage();
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const presets = JSON.parse(data);
+    const presets = await safeReadJSON(PRESETS_FILE, []);
     
     const index = presets.findIndex(p => p.id === id);
     if (index === -1) return null;
@@ -166,8 +182,7 @@ async function updatePreset(id, updates) {
 async function deletePreset(id) {
   try {
     await initPresetStorage();
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const presets = JSON.parse(data);
+    const presets = await safeReadJSON(PRESETS_FILE, []);
     
     const filtered = presets.filter(p => p.id !== id);
     
@@ -194,8 +209,7 @@ async function deletePreset(id) {
 async function incrementPlayCount(id) {
   try {
     await initPresetStorage();
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const presets = JSON.parse(data);
+    const presets = await safeReadJSON(PRESETS_FILE, []);
     
     const preset = presets.find(p => p.id === id);
     if (!preset) return false;
@@ -223,8 +237,7 @@ async function addFavorite(presetId) {
     const preset = await getPresetById(presetId);
     if (!preset) return false;
     
-    const data = await fs.readFile(FAVORITES_FILE, 'utf-8');
-    const favorites = JSON.parse(data);
+    const favorites = await safeReadJSON(FAVORITES_FILE, []);
     
     // Check if already favorited
     if (favorites.includes(presetId)) {
@@ -249,8 +262,7 @@ async function addFavorite(presetId) {
 async function removeFavorite(presetId) {
   try {
     await initPresetStorage();
-    const data = await fs.readFile(FAVORITES_FILE, 'utf-8');
-    const favorites = JSON.parse(data);
+    const favorites = await safeReadJSON(FAVORITES_FILE, []);
     
     const filtered = favorites.filter(id => id !== presetId);
     
@@ -270,11 +282,8 @@ async function getFavorites() {
   try {
     await initPresetStorage();
     
-    const favData = await fs.readFile(FAVORITES_FILE, 'utf-8');
-    const favoriteIds = JSON.parse(favData);
-    
-    const presetData = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const allPresets = JSON.parse(presetData);
+    const favoriteIds = await safeReadJSON(FAVORITES_FILE, []);
+    const allPresets = await safeReadJSON(PRESETS_FILE, []);
     
     // Get presets that are in favorites
     const favorites = allPresets.filter(p => favoriteIds.includes(p.id));
@@ -293,8 +302,7 @@ async function getFavorites() {
 async function isFavorite(presetId) {
   try {
     await initPresetStorage();
-    const data = await fs.readFile(FAVORITES_FILE, 'utf-8');
-    const favorites = JSON.parse(data);
+    const favorites = await safeReadJSON(FAVORITES_FILE, []);
     return favorites.includes(presetId);
   } catch (error) {
     return false;
