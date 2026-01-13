@@ -357,15 +357,17 @@ async function incrementPlayCount(id) {
  * @returns {Promise<boolean>} Success
  */
 async function addFavorite(presetId) {
-  // Retry logic with write verification for race conditions
-  const maxRetries = MAX_RETRIES;
-  const retryDelay = RETRY_DELAY_MS;
-  
-  // Verify preset exists (getPresetById has its own retry logic)
+  // Verify preset exists first (getPresetById has its own MAX_RETRIES retry logic)
+  // This avoids nested retries: getPresetById tries 3 times, then addFavorite tries 3 times for file write
+  // Total operations: 3 (preset lookup) + 3 (file write) = 6, not 3 × 3 = 9
   const preset = await getPresetById(presetId);
   if (!preset) {
     return false;
   }
+  
+  // Retry logic with write verification for race conditions
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
