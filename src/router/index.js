@@ -17,6 +17,11 @@ const router = createRouter({
       path: '/presets',
       name: 'PresetManager',
       component: () => import('@/views/PresetManager.vue')
+    },
+    {
+      path: '/playlists',
+      name: 'PlaylistManager',
+      component: () => import('@/views/PlaylistManager.vue')
     }
   ],
 });
