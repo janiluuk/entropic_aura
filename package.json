@@ -22,6 +22,8 @@
     "test": "NODE_ENV=test node --test --test-concurrency=1 backend/test",
     "test:frontend": "vitest",
     "test:frontend:ui": "vitest --ui",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "test:all": "npm test && npm run test:frontend"
   },
   "dependencies": {
@@ -91,6 +93,7 @@
     "@babel/eslint-parser": "^7.25.9",
     "@eslint/js": "^9.17.0",
     "@ffmpeg/core": "^0.12.6",
+    "@playwright/test": "^1.57.0",
     "@rushstack/eslint-patch": "^1.10.4",
     "@types/fabric": "^5.3.11",
     "@types/node": "^22.10.5",
