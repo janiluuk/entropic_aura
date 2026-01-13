@@ -12,6 +12,11 @@ const router = createRouter({
       path: '/soundscape',
       name: 'SoundscapeCreator',
       component: () => import('@/views/SoundscapeCreator.vue')
+    },
+    {
+      path: '/presets',
+      name: 'PresetManager',
+      component: () => import('@/views/PresetManager.vue')
     }
   ],
 });

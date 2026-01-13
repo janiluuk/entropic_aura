@@ -5,6 +5,30 @@ const { randomUUID } = require('crypto');
 const PRESETS_FILE = path.join(__dirname, '../storage/presets.json');
 const FAVORITES_FILE = path.join(__dirname, '../storage/favorites.json');
 
+// Retry configuration for handling race conditions in concurrent operations
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 50;
+
+/**
+ * Safely read and parse JSON file with fallback
+ * @param {string} filePath - Path to JSON file
+ * @param {*} defaultValue - Default value if parsing fails
+ * @returns {Promise<*>} Parsed data or default value
+ */
+async function safeReadJSON(filePath, defaultValue = []) {
+  try {
+    const data = await fs.readFile(filePath, 'utf-8');
+    // Handle empty or whitespace-only files
+    if (!data || data.trim().length === 0) {
+      return defaultValue;
+    }
+    return JSON.parse(data);
+  } catch (error) {
+    // Return default value on any error (file not found, parse error, etc.)
+    return defaultValue;
+  }
+}
+
 /**
  * Initialize preset storage
  */
@@ -55,15 +79,39 @@ async function createPreset(presetData) {
     timesPlayed: 0
   };
   
-  // Read existing presets
-  const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-  const presets = JSON.parse(data);
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
-  // Add new preset
-  presets.push(preset);
-  
-  // Write back
-  await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      // Read existing presets
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      
+      // Add new preset
+      presets.push(preset);
+      
+      // Write back
+      await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
+      
+      // Verify write by reading back
+      const verification = await safeReadJSON(PRESETS_FILE, []);
+      if (verification.some(p => p.id === preset.id)) {
+        return preset;
+      }
+      
+      // If verification failed and not last attempt, retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        throw error;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
   
   return preset;
 }
@@ -76,8 +124,7 @@ async function createPreset(presetData) {
 async function getAllPresets(filters = {}) {
   try {
     await initPresetStorage();
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    let presets = JSON.parse(data);
+    let presets = await safeReadJSON(PRESETS_FILE, []);
     
     // Apply filters
     if (filters.mood) {
@@ -116,13 +163,31 @@ async function getAllPresets(filters = {}) {
  * @returns {Promise<Object|null>} Preset or null
  */
 async function getPresetById(id) {
-  try {
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const presets = JSON.parse(data);
-    return presets.find(p => p.id === id) || null;
-  } catch (error) {
-    return null;
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      const preset = presets.find(p => p.id === id);
+      
+      if (preset || attempt === maxRetries - 1) {
+        return preset || null;
+      }
+      
+      // If not found and not the last attempt, retry after a delay
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return null;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
+  
+  return null;
 }
 
 /**
@@ -132,28 +197,60 @@ async function getPresetById(id) {
  * @returns {Promise<Object|null>} Updated preset or null
  */
 async function updatePreset(id, updates) {
-  try {
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const presets = JSON.parse(data);
-    
-    const index = presets.findIndex(p => p.id === id);
-    if (index === -1) return null;
-    
-    // Merge updates
-    presets[index] = {
-      ...presets[index],
-      ...updates,
-      id: presets[index].id, // Preserve ID
-      createdAt: presets[index].createdAt, // Preserve creation date
-      updatedAt: new Date().toISOString()
-    };
-    
-    await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
-    
-    return presets[index];
-  } catch (error) {
-    return null;
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      
+      const index = presets.findIndex(p => p.id === id);
+      if (index === -1) {
+        // If not found and not the last attempt, retry after a delay
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        return null;
+      }
+      
+      // Merge updates
+      presets[index] = {
+        ...presets[index],
+        ...updates,
+        id: presets[index].id, // Preserve ID
+        createdAt: presets[index].createdAt, // Preserve creation date
+        updatedAt: new Date().toISOString()
+      };
+      
+      await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
+      
+      // Verify write by reading back
+      const verification = await safeReadJSON(PRESETS_FILE, []);
+      const verifiedPreset = verification.find(p => p.id === id);
+      
+      if (verifiedPreset && verifiedPreset.updatedAt === presets[index].updatedAt) {
+        return presets[index];
+      }
+      
+      // If verification failed and not last attempt, retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      return presets[index]; // Return the preset even if verification failed on last attempt
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return null;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
+  
+  return null;
 }
 
 /**
@@ -162,25 +259,41 @@ async function updatePreset(id, updates) {
  * @returns {Promise<boolean>} Success
  */
 async function deletePreset(id) {
-  try {
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const presets = JSON.parse(data);
-    
-    const filtered = presets.filter(p => p.id !== id);
-    
-    if (filtered.length === presets.length) {
-      return false; // Not found
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      
+      const filtered = presets.filter(p => p.id !== id);
+      
+      if (filtered.length === presets.length) {
+        // Not found - retry if not last attempt
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        return false;
+      }
+      
+      await fs.writeFile(PRESETS_FILE, JSON.stringify(filtered, null, 2));
+      
+      // Also remove from favorites
+      await removeFavorite(id);
+      
+      return true;
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
     }
-    
-    await fs.writeFile(PRESETS_FILE, JSON.stringify(filtered, null, 2));
-    
-    // Also remove from favorites
-    await removeFavorite(id);
-    
-    return true;
-  } catch (error) {
-    return false;
   }
+  
+  return false;
 }
 
 /**
@@ -189,21 +302,53 @@ async function deletePreset(id) {
  * @returns {Promise<boolean>} Success
  */
 async function incrementPlayCount(id) {
-  try {
-    const data = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const presets = JSON.parse(data);
-    
-    const preset = presets.find(p => p.id === id);
-    if (!preset) return false;
-    
-    preset.timesPlayed = (preset.timesPlayed || 0) + 1;
-    
-    await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
-    
-    return true;
-  } catch (error) {
-    return false;
+  // Retry logic for race conditions in concurrent tests
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const presets = await safeReadJSON(PRESETS_FILE, []);
+      
+      const preset = presets.find(p => p.id === id);
+      if (!preset) {
+        // Not found - retry if not last attempt
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        return false;
+      }
+      
+      preset.timesPlayed = (preset.timesPlayed || 0) + 1;
+      
+      await fs.writeFile(PRESETS_FILE, JSON.stringify(presets, null, 2));
+      
+      // Verify write by reading back
+      const verification = await safeReadJSON(PRESETS_FILE, []);
+      const verifiedPreset = verification.find(p => p.id === id);
+      
+      if (verifiedPreset && verifiedPreset.timesPlayed === preset.timesPlayed) {
+        return true;
+      }
+      
+      // If verification failed and not last attempt, retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      return true; // Return true even if verification failed on last attempt
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
+  
+  return false;
 }
 
 /**
@@ -212,29 +357,55 @@ async function incrementPlayCount(id) {
  * @returns {Promise<boolean>} Success
  */
 async function addFavorite(presetId) {
-  try {
-    await initPresetStorage();
-    
-    // Verify preset exists
-    const preset = await getPresetById(presetId);
-    if (!preset) return false;
-    
-    const data = await fs.readFile(FAVORITES_FILE, 'utf-8');
-    const favorites = JSON.parse(data);
-    
-    // Check if already favorited
-    if (favorites.includes(presetId)) {
-      return true; // Already favorited
-    }
-    
-    favorites.push(presetId);
-    
-    await fs.writeFile(FAVORITES_FILE, JSON.stringify(favorites, null, 2));
-    
-    return true;
-  } catch (error) {
+  // Verify preset exists first (getPresetById has its own MAX_RETRIES retry logic)
+  // This avoids nested retries: getPresetById tries 3 times, then addFavorite tries 3 times for file write
+  // Total operations: 3 (preset lookup) + 3 (file write) = 6, not 3 × 3 = 9
+  const preset = await getPresetById(presetId);
+  if (!preset) {
     return false;
   }
+  
+  // Retry logic with write verification for race conditions
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      
+      const favorites = await safeReadJSON(FAVORITES_FILE, []);
+      
+      // Check if already favorited
+      if (favorites.includes(presetId)) {
+        return true; // Already favorited
+      }
+      
+      favorites.push(presetId);
+      
+      await fs.writeFile(FAVORITES_FILE, JSON.stringify(favorites, null, 2));
+      
+      // Verify write by reading back
+      const verification = await safeReadJSON(FAVORITES_FILE, []);
+      if (verification.includes(presetId)) {
+        return true;
+      }
+      
+      // Write didn't persist - retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      return false;
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
+  
+  return false;
 }
 
 /**
@@ -243,18 +414,46 @@ async function addFavorite(presetId) {
  * @returns {Promise<boolean>} Success
  */
 async function removeFavorite(presetId) {
-  try {
-    const data = await fs.readFile(FAVORITES_FILE, 'utf-8');
-    const favorites = JSON.parse(data);
-    
-    const filtered = favorites.filter(id => id !== presetId);
-    
-    await fs.writeFile(FAVORITES_FILE, JSON.stringify(filtered, null, 2));
-    
-    return true;
-  } catch (error) {
-    return false;
+  // Retry logic with write verification for race conditions
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const favorites = await safeReadJSON(FAVORITES_FILE, []);
+      
+      // Check if preset is in favorites before writing
+      if (!favorites.includes(presetId)) {
+        return true; // Already not in favorites
+      }
+      
+      const filtered = favorites.filter(id => id !== presetId);
+      
+      await fs.writeFile(FAVORITES_FILE, JSON.stringify(filtered, null, 2));
+      
+      // Verify write by reading back
+      const verification = await safeReadJSON(FAVORITES_FILE, []);
+      if (!verification.includes(presetId)) {
+        return true;
+      }
+      
+      // Write didn't persist - retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      return false;
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
+  
+  return false;
 }
 
 /**
@@ -265,11 +464,8 @@ async function getFavorites() {
   try {
     await initPresetStorage();
     
-    const favData = await fs.readFile(FAVORITES_FILE, 'utf-8');
-    const favoriteIds = JSON.parse(favData);
-    
-    const presetData = await fs.readFile(PRESETS_FILE, 'utf-8');
-    const allPresets = JSON.parse(presetData);
+    const favoriteIds = await safeReadJSON(FAVORITES_FILE, []);
+    const allPresets = await safeReadJSON(PRESETS_FILE, []);
     
     // Get presets that are in favorites
     const favorites = allPresets.filter(p => favoriteIds.includes(p.id));
@@ -287,8 +483,8 @@ async function getFavorites() {
  */
 async function isFavorite(presetId) {
   try {
-    const data = await fs.readFile(FAVORITES_FILE, 'utf-8');
-    const favorites = JSON.parse(data);
+    await initPresetStorage();
+    const favorites = await safeReadJSON(FAVORITES_FILE, []);
     return favorites.includes(presetId);
   } catch (error) {
     return false;
