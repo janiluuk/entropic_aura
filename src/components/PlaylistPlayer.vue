@@ -151,7 +151,7 @@ async function loadCurrentPreset() {
     })
     
     const timestamp = new Date().getTime()
-    audioSrc.value = `/api/stream?${params.toString()}&t=${timestamp}`
+    audioSrc.value = `/api/stream?${params.toString()}&t=${encodeURIComponent(timestamp)}`
     
     // Start rotation timer if enabled
     if (autoRotate.value) {

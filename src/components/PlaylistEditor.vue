@@ -243,6 +243,7 @@ async function loadPresets() {
     })
   } catch (err) {
     console.error('Failed to load presets:', err)
+    error.value = 'Failed to load available presets'
   } finally {
     loadingPresets.value = false
   }

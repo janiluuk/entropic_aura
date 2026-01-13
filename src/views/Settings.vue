@@ -50,7 +50,7 @@
         
         <div class="setting-item checkbox-item">
           <label>
-            <input type="checkbox" v-model="settings.autoplay" @change="handleChange" />
+            <input id="autoplay" type="checkbox" v-model="settings.autoplay" @change="handleChange" />
             <span>Autoplay next preset</span>
           </label>
         </div>
