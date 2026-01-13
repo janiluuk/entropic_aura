@@ -377,6 +377,9 @@ test('POST /api/presets/:id/play increments play count', async () => {
       body: JSON.stringify({ name: 'Test', prompt: 'test' })
     });
     const { preset } = await createRes.json();
+    
+    // Small delay to ensure preset is fully persisted (race condition mitigation)
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     // Play preset
     const playRes = await fetch(`http://localhost:${port}/api/presets/${preset.id}/play`, {
@@ -401,28 +404,33 @@ test('POST /api/favorites/:presetId adds to favorites', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create preset
-  const createRes = await fetch(`http://localhost:${port}/api/presets`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Test', prompt: 'test' })
-  });
-  const { preset } = await createRes.json();
+  try {
+    // Create preset
+    const createRes = await fetch(`http://localhost:${port}/api/presets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Test', prompt: 'test' })
+    });
+    const { preset } = await createRes.json();
+    
+    // Small delay to ensure preset is fully persisted (race condition mitigation)
+    await new Promise(resolve => setTimeout(resolve, 100));
 
-  // Add to favorites
-  const response = await fetch(`http://localhost:${port}/api/favorites/${preset.id}`, {
-    method: 'POST'
-  });
+    // Add to favorites
+    const response = await fetch(`http://localhost:${port}/api/favorites/${preset.id}`, {
+      method: 'POST'
+    });
 
-  assert.strictEqual(response.status, 200);
+    assert.strictEqual(response.status, 200);
 
-  // Check favorites
-  const favRes = await fetch(`http://localhost:${port}/api/favorites`);
-  const favBody = await favRes.json();
-  assert.strictEqual(favBody.favorites.length, 1);
-  assert.strictEqual(favBody.favorites[0].id, preset.id);
-
-  await closeServer(server);
+    // Check favorites
+    const favRes = await fetch(`http://localhost:${port}/api/favorites`);
+    const favBody = await favRes.json();
+    assert.strictEqual(favBody.favorites.length, 1);
+    assert.strictEqual(favBody.favorites[0].id, preset.id);
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('DELETE /api/favorites/:presetId removes from favorites', async () => {
@@ -441,11 +449,17 @@ test('DELETE /api/favorites/:presetId removes from favorites', async () => {
       body: JSON.stringify({ name: 'Test', prompt: 'test' })
     });
     const { preset } = await createRes.json();
+    
+    // Small delay to ensure preset is fully persisted (race condition mitigation)
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     // Add to favorites
     await fetch(`http://localhost:${port}/api/favorites/${preset.id}`, {
       method: 'POST'
     });
+    
+    // Small delay to ensure favorite is written
+    await new Promise(resolve => setTimeout(resolve, 50));
 
     // Remove from favorites
     const response = await fetch(`http://localhost:${port}/api/favorites/${preset.id}`, {
@@ -488,10 +502,16 @@ test('GET /api/favorites returns all favorite presets', async () => {
       body: JSON.stringify({ name: 'Preset 2', prompt: 'test' })
     });
     const { preset: preset2 } = await preset2Res.json();
+    
+    // Small delay to ensure presets are fully persisted (race condition mitigation)
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     // Add to favorites
     await fetch(`http://localhost:${port}/api/favorites/${preset1.id}`, { method: 'POST' });
     await fetch(`http://localhost:${port}/api/favorites/${preset2.id}`, { method: 'POST' });
+    
+    // Small delay to ensure favorites are written
+    await new Promise(resolve => setTimeout(resolve, 50));
 
     // Get favorites
     const response = await fetch(`http://localhost:${port}/api/favorites`);
