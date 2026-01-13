@@ -201,14 +201,18 @@ function downloadAudio() {
   margin: 2rem auto;
   padding: 2rem;
   text-align: center;
-  background: #f9f9f9;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 h1 {
-  color: #2c3e50;
+  color: #ffffff;
   margin-bottom: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .error-message {
@@ -234,17 +238,24 @@ textarea {
   min-height: 100px;
   margin-bottom: 0.25rem;
   padding: 0.75rem;
-  border: 2px solid #ddd;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
   resize: vertical;
-  transition: border-color 0.3s;
+  transition: all 0.3s;
+}
+
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 textarea:focus {
   outline: none;
   border-color: #42b983;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 textarea:disabled {
@@ -255,7 +266,7 @@ textarea:disabled {
 .char-count {
   text-align: right;
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   margin-bottom: 1rem;
 }
 
@@ -269,16 +280,20 @@ textarea:disabled {
 
 .mood-tags button {
   padding: 0.5rem 1rem;
-  border: 2px solid #ddd;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 20px;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.3s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .mood-tags button:hover:not(:disabled) {
   border-color: #42b983;
+  background: rgba(66, 185, 131, 0.2);
   transform: translateY(-2px);
 }
 

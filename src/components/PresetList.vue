@@ -245,8 +245,9 @@ async function handleToggleFavorite(preset) {
 }
 
 .list-header h2 {
-  color: #2c3e50;
+  color: #ffffff;
   margin: 0 0 1rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .list-controls {
@@ -259,10 +260,24 @@ async function handleToggleFavorite(preset) {
 .mood-filter,
 .sort-select {
   padding: 0.75rem;
-  border: 2px solid #ddd;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
   border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: all 0.3s;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mood-filter option,
+.sort-select option {
+  background: #1a1a1a;
+  color: #ffffff;
 }
 
 .search-input {
@@ -275,11 +290,13 @@ async function handleToggleFavorite(preset) {
 .sort-select:focus {
   outline: none;
   border-color: #42b983;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .loading {
   text-align: center;
   padding: 3rem;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .spinner {

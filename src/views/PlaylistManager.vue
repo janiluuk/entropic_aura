@@ -414,7 +414,7 @@ function handleAudioError() {
 <style scoped>
 .playlist-manager {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: transparent;
   padding: 2rem;
   padding-bottom: 200px;
 }
@@ -429,7 +429,8 @@ function handleAudioError() {
 
 .header h1 {
   margin: 0;
-  color: #2c3e50;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .create-btn {
@@ -496,16 +497,20 @@ function handleAudioError() {
 }
 
 .playlist-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   transition: all 0.3s;
 }
 
 .playlist-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(66, 185, 131, 0.5);
 }
 
 .card-header {

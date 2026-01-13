@@ -118,7 +118,7 @@ function handleAudioLoaded() {
 <style scoped>
 .preset-manager {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: transparent;
   padding-bottom: 200px; /* Space for fixed player */
 }
 
@@ -133,8 +133,11 @@ function handleAudioLoaded() {
 .tabs button {
   padding: 0.75rem 1.5rem;
   border: none;
-  background: white;
-  color: #666;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -143,13 +146,15 @@ function handleAudioLoaded() {
 }
 
 .tabs button:hover {
-  background: #f0f0f0;
-  color: #333;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .tabs button.active {
-  background: #42b983;
+  background: rgba(66, 185, 131, 0.8);
   color: white;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .player-section {
@@ -157,10 +162,12 @@ function handleAudioLoaded() {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 2px solid #42b983;
   padding: 1.5rem 2rem;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
   z-index: 1000;
 }
 
@@ -176,7 +183,7 @@ function handleAudioLoaded() {
 
 .player-header h3 {
   margin: 0;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .stop-btn {

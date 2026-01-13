@@ -402,7 +402,7 @@ function showMessage(text, type = 'success') {
 <style scoped>
 .settings-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: transparent;
   padding: 2rem;
 }
 
@@ -413,7 +413,8 @@ function showMessage(text, type = 'success') {
 
 h1 {
   margin: 0 0 2rem;
-  color: #2c3e50;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .settings-sections {
@@ -424,18 +425,22 @@ h1 {
 }
 
 .settings-section {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .settings-section h2 {
   margin: 0 0 1.5rem;
-  color: #2c3e50;
+  color: #ffffff;
   font-size: 1.25rem;
-  border-bottom: 2px solid #42b983;
+  border-bottom: 2px solid rgba(66, 185, 131, 0.5);
   padding-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .setting-item {

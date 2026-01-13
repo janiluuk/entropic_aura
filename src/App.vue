@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <BackgroundVisualizer />
     <nav class="main-nav">
       <div class="nav-container">
         <h1 class="app-title">Entropic Aura</h1>
@@ -16,17 +17,20 @@
 </template>
 
 <script setup>
-// App navigation component
+import BackgroundVisualizer from '@/components/BackgroundVisualizer.vue'
 </script>
 
 <style>
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #0a0a0a;
 }
 
 .main-nav {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   position: sticky;
   top: 0;
@@ -47,6 +51,7 @@ body {
   color: white;
   font-size: 1.5rem;
   font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .nav-links {
@@ -76,5 +81,6 @@ body {
 
 #app {
   min-height: 100vh;
+  position: relative;
 }
 </style>
