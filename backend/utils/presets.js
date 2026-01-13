@@ -353,28 +353,58 @@ async function incrementPlayCount(id) {
  * @returns {Promise<boolean>} Success
  */
 async function addFavorite(presetId) {
-  try {
-    await initPresetStorage();
-    
-    // Verify preset exists
-    const preset = await getPresetById(presetId);
-    if (!preset) return false;
-    
-    const favorites = await safeReadJSON(FAVORITES_FILE, []);
-    
-    // Check if already favorited
-    if (favorites.includes(presetId)) {
-      return true; // Already favorited
+  // Retry logic with write verification for race conditions
+  const maxRetries = 3;
+  const retryDelay = 50; // ms
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      
+      // Verify preset exists (getPresetById has its own retry logic)
+      const preset = await getPresetById(presetId);
+      if (!preset) {
+        // Preset not found - retry if not last attempt
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue;
+        }
+        return false;
+      }
+      
+      const favorites = await safeReadJSON(FAVORITES_FILE, []);
+      
+      // Check if already favorited
+      if (favorites.includes(presetId)) {
+        return true; // Already favorited
+      }
+      
+      favorites.push(presetId);
+      
+      await fs.writeFile(FAVORITES_FILE, JSON.stringify(favorites, null, 2));
+      
+      // Verify write by reading back
+      const verification = await safeReadJSON(FAVORITES_FILE, []);
+      if (verification.includes(presetId)) {
+        return true;
+      }
+      
+      // Write didn't persist - retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      return false;
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
     }
-    
-    favorites.push(presetId);
-    
-    await fs.writeFile(FAVORITES_FILE, JSON.stringify(favorites, null, 2));
-    
-    return true;
-  } catch (error) {
-    return false;
   }
+  
+  return false;
 }
 
 /**
@@ -383,18 +413,41 @@ async function addFavorite(presetId) {
  * @returns {Promise<boolean>} Success
  */
 async function removeFavorite(presetId) {
-  try {
-    await initPresetStorage();
-    const favorites = await safeReadJSON(FAVORITES_FILE, []);
-    
-    const filtered = favorites.filter(id => id !== presetId);
-    
-    await fs.writeFile(FAVORITES_FILE, JSON.stringify(filtered, null, 2));
-    
-    return true;
-  } catch (error) {
-    return false;
+  // Retry logic with write verification for race conditions
+  const maxRetries = 3;
+  const retryDelay = 50; // ms
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      await initPresetStorage();
+      const favorites = await safeReadJSON(FAVORITES_FILE, []);
+      
+      const filtered = favorites.filter(id => id !== presetId);
+      
+      await fs.writeFile(FAVORITES_FILE, JSON.stringify(filtered, null, 2));
+      
+      // Verify write by reading back
+      const verification = await safeReadJSON(FAVORITES_FILE, []);
+      if (!verification.includes(presetId)) {
+        return true;
+      }
+      
+      // Write didn't persist - retry
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      return false;
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
   }
+  
+  return false;
 }
 
 /**
