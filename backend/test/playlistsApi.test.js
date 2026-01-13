@@ -29,13 +29,18 @@ test('GET /api/playlists returns all playlists', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  const response = await fetch(`http://localhost:${port}/api/playlists`);
-  const body = await response.json();
 
-  assert.strictEqual(response.status, 200);
-  assert.ok(Array.isArray(body.playlists));
+  try {
+    const response = await fetch(`http://localhost:${port}/api/playlists`);
+    const body = await response.json();
 
-  await closeServer(server);
+    assert.strictEqual(response.status, 200);
+    assert.ok(Array.isArray(body.playlists));
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('POST /api/playlists creates a new playlist', async () => {
@@ -45,28 +50,33 @@ test('POST /api/playlists creates a new playlist', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  const playlistData = {
-    name: 'Morning Mix',
-    description: 'Energizing morning sounds',
-    rotationInterval: 300,
-    shuffle: false,
-    repeat: true
-  };
 
-  const response = await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(playlistData)
-  });
-  const body = await response.json();
+  try {
+    const playlistData = {
+      name: 'Morning Mix',
+      description: 'Energizing morning sounds',
+      rotationInterval: 300,
+      shuffle: false,
+      repeat: true
+    };
 
-  assert.strictEqual(response.status, 201);
-  assert.ok(body.playlist);
-  assert.ok(body.playlist.id);
-  assert.strictEqual(body.playlist.name, 'Morning Mix');
-  assert.strictEqual(body.playlist.rotationInterval, 300);
+    const response = await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(playlistData)
+    });
+    const body = await response.json();
 
-  await closeServer(server);
+    assert.strictEqual(response.status, 201);
+    assert.ok(body.playlist);
+    assert.ok(body.playlist.id);
+    assert.strictEqual(body.playlist.name, 'Morning Mix');
+    assert.strictEqual(body.playlist.rotationInterval, 300);
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('GET /api/playlists/:id returns specific playlist', async () => {
@@ -76,22 +86,27 @@ test('GET /api/playlists/:id returns specific playlist', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create playlist
-  const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Test Playlist' })
-  });
-  const { playlist } = await createRes.json();
 
-  // Get playlist
-  const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
-  const body = await response.json();
+  try {
+    // Create playlist
+    const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Test Playlist' })
+    });
+    const { playlist } = await createRes.json();
 
-  assert.strictEqual(response.status, 200);
-  assert.strictEqual(body.playlist.id, playlist.id);
+    // Get playlist
+    const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
+    const body = await response.json();
 
-  await closeServer(server);
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(body.playlist.id, playlist.id);
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('GET /api/playlists/:id returns 404 for non-existent playlist', async () => {
@@ -101,11 +116,16 @@ test('GET /api/playlists/:id returns 404 for non-existent playlist', async () =>
   const server = app.listen(0);
   const { port } = server.address();
 
-  const response = await fetch(`http://localhost:${port}/api/playlists/non-existent-id`);
 
-  assert.strictEqual(response.status, 404);
+  try {
+    const response = await fetch(`http://localhost:${port}/api/playlists/non-existent-id`);
 
-  await closeServer(server);
+    assert.strictEqual(response.status, 404);
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('PATCH /api/playlists/:id updates playlist', async () => {
@@ -115,27 +135,32 @@ test('PATCH /api/playlists/:id updates playlist', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create playlist
-  const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Original' })
-  });
-  const { playlist } = await createRes.json();
 
-  // Update playlist
-  const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Updated', shuffle: true })
-  });
-  const body = await response.json();
+  try {
+    // Create playlist
+    const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Original' })
+    });
+    const { playlist } = await createRes.json();
 
-  assert.strictEqual(response.status, 200);
-  assert.strictEqual(body.playlist.name, 'Updated');
-  assert.strictEqual(body.playlist.shuffle, true);
+    // Update playlist
+    const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Updated', shuffle: true })
+    });
+    const body = await response.json();
 
-  await closeServer(server);
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(body.playlist.name, 'Updated');
+    assert.strictEqual(body.playlist.shuffle, true);
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('DELETE /api/playlists/:id removes playlist', async () => {
@@ -145,26 +170,31 @@ test('DELETE /api/playlists/:id removes playlist', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create playlist
-  const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Test' })
-  });
-  const { playlist } = await createRes.json();
 
-  // Delete playlist
-  const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`, {
-    method: 'DELETE'
-  });
+  try {
+    // Create playlist
+    const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Test' })
+    });
+    const { playlist } = await createRes.json();
 
-  assert.strictEqual(response.status, 204);
+    // Delete playlist
+    const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`, {
+      method: 'DELETE'
+    });
 
-  // Verify it's gone
-  const getRes = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
-  assert.strictEqual(getRes.status, 404);
+    assert.strictEqual(response.status, 204);
 
-  await closeServer(server);
+    // Verify it's gone
+    const getRes = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
+    assert.strictEqual(getRes.status, 404);
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('POST /api/playlists/:id/presets adds preset to playlist', async () => {
@@ -174,30 +204,35 @@ test('POST /api/playlists/:id/presets adds preset to playlist', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create playlist
-  const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Test' })
-  });
-  const { playlist } = await createRes.json();
 
-  // Add preset
-  const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ presetId: 'preset-123', duration: 60 })
-  });
+  try {
+    // Create playlist
+    const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Test' })
+    });
+    const { playlist } = await createRes.json();
 
-  assert.strictEqual(response.status, 200);
+    // Add preset
+    const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presetId: 'preset-123', duration: 60 })
+    });
 
-  // Check playlist has preset
-  const getRes = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
-  const body = await getRes.json();
-  assert.strictEqual(body.playlist.presets.length, 1);
-  assert.strictEqual(body.playlist.presets[0].presetId, 'preset-123');
+    assert.strictEqual(response.status, 200);
 
-  await closeServer(server);
+    // Check playlist has preset
+    const getRes = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
+    const body = await getRes.json();
+    assert.strictEqual(body.playlist.presets.length, 1);
+    assert.strictEqual(body.playlist.presets[0].presetId, 'preset-123');
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('DELETE /api/playlists/:id/presets/:presetId removes preset', async () => {
@@ -207,34 +242,39 @@ test('DELETE /api/playlists/:id/presets/:presetId removes preset', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create playlist
-  const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Test' })
-  });
-  const { playlist } = await createRes.json();
 
-  // Add preset
-  await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ presetId: 'preset-123' })
-  });
+  try {
+    // Create playlist
+    const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Test' })
+    });
+    const { playlist } = await createRes.json();
 
-  // Remove preset
-  const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets/preset-123`, {
-    method: 'DELETE'
-  });
+    // Add preset
+    await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presetId: 'preset-123' })
+    });
 
-  assert.strictEqual(response.status, 204);
+    // Remove preset
+    const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets/preset-123`, {
+      method: 'DELETE'
+    });
 
-  // Verify it's gone
-  const getRes = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
-  const body = await getRes.json();
-  assert.strictEqual(body.playlist.presets.length, 0);
+    assert.strictEqual(response.status, 204);
 
-  await closeServer(server);
+    // Verify it's gone
+    const getRes = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
+    const body = await getRes.json();
+    assert.strictEqual(body.playlist.presets.length, 0);
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('PUT /api/playlists/:id/reorder reorders presets', async () => {
@@ -244,48 +284,53 @@ test('PUT /api/playlists/:id/reorder reorders presets', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create playlist
-  const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Test' })
-  });
-  const { playlist } = await createRes.json();
 
-  // Add presets
-  await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ presetId: 'preset-1' })
-  });
-  await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ presetId: 'preset-2' })
-  });
-  await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ presetId: 'preset-3' })
-  });
+  try {
+    // Create playlist
+    const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Test' })
+    });
+    const { playlist } = await createRes.json();
 
-  // Reorder
-  const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/reorder`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ presetIds: ['preset-3', 'preset-1', 'preset-2'] })
-  });
+    // Add presets
+    await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presetId: 'preset-1' })
+    });
+    await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presetId: 'preset-2' })
+    });
+    await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/presets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presetId: 'preset-3' })
+    });
 
-  assert.strictEqual(response.status, 200);
+    // Reorder
+    const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/reorder`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presetIds: ['preset-3', 'preset-1', 'preset-2'] })
+    });
 
-  // Check order
-  const getRes = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
-  const body = await getRes.json();
-  assert.strictEqual(body.playlist.presets[0].presetId, 'preset-3');
-  assert.strictEqual(body.playlist.presets[1].presetId, 'preset-1');
-  assert.strictEqual(body.playlist.presets[2].presetId, 'preset-2');
+    assert.strictEqual(response.status, 200);
 
-  await closeServer(server);
+    // Check order
+    const getRes = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}`);
+    const body = await getRes.json();
+    assert.strictEqual(body.playlist.presets[0].presetId, 'preset-3');
+    assert.strictEqual(body.playlist.presets[1].presetId, 'preset-1');
+    assert.strictEqual(body.playlist.presets[2].presetId, 'preset-2');
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('PUT /api/playlists/:id/reorder validates input', async () => {
@@ -295,24 +340,29 @@ test('PUT /api/playlists/:id/reorder validates input', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create playlist
-  const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Test' })
-  });
-  const { playlist } = await createRes.json();
 
-  // Try to reorder with invalid input
-  const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/reorder`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ presetIds: 'not-an-array' })
-  });
+  try {
+    // Create playlist
+    const createRes = await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Test' })
+    });
+    const { playlist } = await createRes.json();
 
-  assert.strictEqual(response.status, 400);
+    // Try to reorder with invalid input
+    const response = await fetch(`http://localhost:${port}/api/playlists/${playlist.id}/reorder`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ presetIds: 'not-an-array' })
+    });
 
-  await closeServer(server);
+    assert.strictEqual(response.status, 400);
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 test('GET /api/playlists supports search filter', async () => {
@@ -322,27 +372,32 @@ test('GET /api/playlists supports search filter', async () => {
   const server = app.listen(0);
   const { port } = server.address();
 
-  // Create playlists
-  await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Morning Mix', description: 'Energizing' })
-  });
-  await fetch(`http://localhost:${port}/api/playlists`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'Evening Calm', description: 'Relaxing' })
-  });
 
-  // Search
-  const response = await fetch(`http://localhost:${port}/api/playlists?search=morning`);
-  const body = await response.json();
+  try {
+    // Create playlists
+    await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Morning Mix', description: 'Energizing' })
+    });
+    await fetch(`http://localhost:${port}/api/playlists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'Evening Calm', description: 'Relaxing' })
+    });
 
-  assert.strictEqual(response.status, 200);
-  assert.strictEqual(body.playlists.length, 1);
-  assert.ok(body.playlists[0].name.includes('Morning'));
+    // Search
+    const response = await fetch(`http://localhost:${port}/api/playlists?search=morning`);
+    const body = await response.json();
 
-  await closeServer(server);
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(body.playlists.length, 1);
+    assert.ok(body.playlists[0].name.includes('Morning'));
+
+
+  } finally {
+    await closeServer(server);
+  }
 });
 
 // Cleanup
