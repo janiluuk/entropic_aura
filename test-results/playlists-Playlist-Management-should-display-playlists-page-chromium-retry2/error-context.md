@@ -18,5 +18,7 @@
     - generic [ref=e15]:
       - heading "Playlists" [level=1] [ref=e16]
       - button "+ Create Playlist" [ref=e17] [cursor=pointer]
-    - generic [ref=e18]: "Failed to load playlists: Failed to load playlists"
+    - generic [ref=e18]:
+      - paragraph [ref=e19]: No playlists yet
+      - paragraph [ref=e20]: Create your first playlist to get started
 ```

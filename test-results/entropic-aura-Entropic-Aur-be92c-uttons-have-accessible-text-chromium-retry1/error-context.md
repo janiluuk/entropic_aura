@@ -21,7 +21,11 @@
     - generic [ref=e18]:
       - button "Relaxing" [ref=e19] [cursor=pointer]
       - button "Energizing" [ref=e20] [cursor=pointer]
-    - generic [ref=e21]:
-      - button "🎤 Speak" [ref=e22] [cursor=pointer]
-      - button "▶️ Generate" [disabled] [ref=e23]
+      - button "Peaceful" [ref=e21] [cursor=pointer]
+      - button "Dark" [ref=e22] [cursor=pointer]
+      - button "Cinematic" [ref=e23] [cursor=pointer]
+      - button "Nature" [ref=e24] [cursor=pointer]
+    - generic [ref=e25]:
+      - button "🎤 Speak" [ref=e26] [cursor=pointer]
+      - button "▶️ Generate" [disabled] [ref=e27]
 ```

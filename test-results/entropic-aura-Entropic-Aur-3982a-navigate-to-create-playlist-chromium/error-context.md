@@ -18,27 +18,29 @@
     - generic [ref=e15]:
       - heading "Playlists" [level=1] [ref=e16]
       - button "+ Create Playlist" [active] [ref=e17] [cursor=pointer]
-    - generic [ref=e18]: "Failed to load playlists: Failed to load playlists"
-    - generic [ref=e20]:
-      - heading "Create Playlist" [level=2] [ref=e21]
-      - generic [ref=e22]:
-        - generic [ref=e23]:
-          - generic [ref=e24]: Name
-          - textbox [ref=e25]
-        - generic [ref=e26]:
-          - generic [ref=e27]: Description
-          - textbox [ref=e28]
-        - generic [ref=e29]:
-          - generic [ref=e30]: Rotation Interval (seconds)
-          - spinbutton [ref=e31]: "300"
-          - generic [ref=e32]: How long to play each preset before switching
-        - generic [ref=e34]:
-          - checkbox "Shuffle" [ref=e35]
+    - generic [ref=e18]:
+      - paragraph [ref=e19]: No playlists yet
+      - paragraph [ref=e20]: Create your first playlist to get started
+    - generic [ref=e22]:
+      - heading "Create Playlist" [level=2] [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: Name
+          - textbox [ref=e27]
+        - generic [ref=e28]:
+          - generic [ref=e29]: Description
+          - textbox [ref=e30]
+        - generic [ref=e31]:
+          - generic [ref=e32]: Rotation Interval (seconds)
+          - spinbutton [ref=e33]: "300"
+          - generic [ref=e34]: How long to play each preset before switching
+        - generic [ref=e36]:
+          - checkbox "Shuffle" [ref=e37]
           - text: Shuffle
-        - generic [ref=e37]:
-          - checkbox "Repeat" [checked] [ref=e38]
-          - text: Repeat
         - generic [ref=e39]:
-          - button "Cancel" [ref=e40] [cursor=pointer]
-          - button "Create" [ref=e41] [cursor=pointer]
+          - checkbox "Repeat" [checked] [ref=e40]
+          - text: Repeat
+        - generic [ref=e41]:
+          - button "Cancel" [ref=e42] [cursor=pointer]
+          - button "Create" [ref=e43] [cursor=pointer]
 ```

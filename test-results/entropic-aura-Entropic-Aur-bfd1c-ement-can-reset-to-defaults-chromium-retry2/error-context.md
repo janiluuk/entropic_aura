@@ -39,6 +39,12 @@
           - generic [ref=e37]: Default Mood
           - combobox [ref=e38]:
             - option "None" [selected]
+            - option "Relaxing"
+            - option "Energizing"
+            - option "Peaceful"
+            - option "Dark"
+            - option "Cinematic"
+            - option "Nature"
         - generic [ref=e39]:
           - generic [ref=e41]: Default Duration (seconds)
           - spinbutton [ref=e42]: "300"
