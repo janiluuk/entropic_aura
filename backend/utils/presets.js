@@ -5,6 +5,10 @@ const { randomUUID } = require('crypto');
 const PRESETS_FILE = path.join(__dirname, '../storage/presets.json');
 const FAVORITES_FILE = path.join(__dirname, '../storage/favorites.json');
 
+// Retry configuration for handling race conditions in concurrent operations
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 50;
+
 /**
  * Safely read and parse JSON file with fallback
  * @param {string} filePath - Path to JSON file
@@ -76,8 +80,8 @@ async function createPreset(presetData) {
   };
   
   // Retry logic for race conditions in concurrent tests
-  const maxRetries = 3;
-  const retryDelay = 50; // ms
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -160,8 +164,8 @@ async function getAllPresets(filters = {}) {
  */
 async function getPresetById(id) {
   // Retry logic for race conditions in concurrent tests
-  const maxRetries = 3;
-  const retryDelay = 50; // ms
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -194,8 +198,8 @@ async function getPresetById(id) {
  */
 async function updatePreset(id, updates) {
   // Retry logic for race conditions in concurrent tests
-  const maxRetries = 3;
-  const retryDelay = 50; // ms
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -256,8 +260,8 @@ async function updatePreset(id, updates) {
  */
 async function deletePreset(id) {
   // Retry logic for race conditions in concurrent tests
-  const maxRetries = 3;
-  const retryDelay = 50; // ms
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -299,8 +303,8 @@ async function deletePreset(id) {
  */
 async function incrementPlayCount(id) {
   // Retry logic for race conditions in concurrent tests
-  const maxRetries = 3;
-  const retryDelay = 50; // ms
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -354,8 +358,8 @@ async function incrementPlayCount(id) {
  */
 async function addFavorite(presetId) {
   // Retry logic with write verification for race conditions
-  const maxRetries = 3;
-  const retryDelay = 50; // ms
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -414,8 +418,8 @@ async function addFavorite(presetId) {
  */
 async function removeFavorite(presetId) {
   // Retry logic with write verification for race conditions
-  const maxRetries = 3;
-  const retryDelay = 50; // ms
+  const maxRetries = MAX_RETRIES;
+  const retryDelay = RETRY_DELAY_MS;
   
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
