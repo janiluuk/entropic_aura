@@ -13,12 +13,15 @@
 - **Preset Management**: Create, save, edit, and manage custom atmosphere presets
 - **Favorites System**: Mark and quickly access favorite presets
 - **Playback History**: Track and review recently generated soundscapes
+- **Playlist System**: Create playlists that rotate atmospheres at configurable intervals
+- **Playlist Automation**: Automatic preset switching with shuffle and repeat modes
+- **User Settings**: Customize audio quality, playback preferences, and appearance
+- **Data Export/Import**: Backup and restore presets, playlists, and settings
 
 ### Planned Features
-- **Real-Time Audio Mixing**: Mix 4 tracks together with dynamic crossfading
-- **Playlist System**: Create playlists that rotate atmospheres at configurable intervals
-- **Smooth Transitions**: Seamless crossfading between different atmospheres
-- **Enhanced Audio Visualization**: Visual representation of multi-track audio
+- **Real-Time Audio Mixing**: Advanced mixing of 4 tracks with dynamic crossfading
+- **Enhanced Crossfade Transitions**: Seamless blending between different atmospheres
+- **Advanced Audio Effects**: Real-time filter adjustment and custom effect chains
 
 ## Architecture
 
@@ -253,7 +256,100 @@ Get recent soundscape generation history.
 **Query Parameters:**
 - `limit` (optional): Maximum number of items to return (default: 10)
 
-## Storage
+### Playlist Management
+
+#### `GET /api/playlists`
+Get all playlists with optional search.
+
+**Query Parameters:**
+- `search` (optional): Search in playlist name or description
+
+**Response:**
+```json
+{
+  "playlists": [
+    {
+      "id": "uuid",
+      "name": "Morning Mix",
+      "description": "Energizing morning sounds",
+      "presets": [
+        {
+          "presetId": "preset-uuid",
+          "duration": 300,
+          "order": 0
+        }
+      ],
+      "rotationInterval": 300,
+      "shuffle": false,
+      "repeat": true,
+      "createdAt": "2026-01-13T00:00:00.000Z",
+      "updatedAt": "2026-01-13T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### `POST /api/playlists`
+Create a new playlist.
+
+**Request Body:**
+```json
+{
+  "name": "Evening Relaxation",
+  "description": "Calm evening atmospheres",
+  "rotationInterval": 300,
+  "shuffle": false,
+  "repeat": true
+}
+```
+
+**Response:** `201 Created` with playlist object
+
+#### `GET /api/playlists/:id`
+Get specific playlist by ID.
+
+#### `PATCH /api/playlists/:id`
+Update playlist properties.
+
+**Request Body:**
+```json
+{
+  "name": "Updated Name",
+  "description": "Updated description",
+  "rotationInterval": 600,
+  "shuffle": true
+}
+```
+
+#### `DELETE /api/playlists/:id`
+Delete playlist.
+
+#### `POST /api/playlists/:id/presets`
+Add preset to playlist.
+
+**Request Body:**
+```json
+{
+  "presetId": "preset-uuid",
+  "duration": 300,
+  "order": 0
+}
+```
+
+#### `DELETE /api/playlists/:id/presets/:presetId`
+Remove preset from playlist.
+
+#### `PUT /api/playlists/:id/reorder`
+Reorder presets in playlist.
+
+**Request Body:**
+```json
+{
+  "presetIds": ["preset-uuid-1", "preset-uuid-2", "preset-uuid-3"]
+}
+```
+
+### Other Endpoints
 
 The project does not persist data on the server. Audio is streamed directly
 from ComfyUI to the client and discarded after playback. Client‑side storage
@@ -335,20 +431,20 @@ Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
 - ✅ Implement 4 simultaneous track generation
 - ✅ Track state management (generating, ready, playing, fading, expired)
 - ✅ Individual track volume control
-- ⏳ Real-time audio mixing engine
-- ⏳ Crossfade transitions between tracks
+- ⏳ Real-time audio mixing engine (backend ready, frontend integration pending)
+- ⏳ Crossfade transitions between tracks (backend ready, frontend integration pending)
 
 ### Phase 3: User Experience (Completed)
 - ✅ Preset creation and management system
 - ✅ Favorites functionality
 - ✅ Search and filter presets
 - ✅ Play count tracking
-- ⏳ Playlist builder with rotation intervals
-- ⏳ Enhanced audio visualization
+- ✅ Playlist builder with rotation intervals
+- ✅ Enhanced audio visualization
 
-### Phase 4: Advanced Features (Planned)
-- ⏳ Real-time audio mixing with crossfading
-- ⏳ Playlist automation and scheduling
-- ⏳ Audio visualization components
-- ⏳ User settings and preferences
-- ⏳ Export/import presets and playlists
+### Phase 4: Advanced Features (Completed)
+- ✅ Playlist automation and scheduling
+- ✅ Audio visualization components
+- ✅ User settings and preferences
+- ✅ Export/import presets and playlists
+- ⏳ Real-time audio mixing with crossfading (backend infrastructure ready)
