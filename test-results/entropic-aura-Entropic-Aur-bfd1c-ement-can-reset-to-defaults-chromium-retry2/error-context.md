@@ -1,0 +1,93 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e6]:
+    - generic [ref=e7]:
+      - heading "Entropic Aura" [level=1] [ref=e8]
+      - generic [ref=e9]:
+        - link "Soundscape" [ref=e10] [cursor=pointer]:
+          - /url: /soundscape
+        - link "Presets" [ref=e11] [cursor=pointer]:
+          - /url: /presets
+        - link "Playlists" [ref=e12] [cursor=pointer]:
+          - /url: /playlists
+        - link "Settings" [ref=e13] [cursor=pointer]:
+          - /url: /settings
+  - generic [ref=e15]:
+    - heading "Settings" [level=1] [ref=e16]
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - heading "Audio Settings" [level=2] [ref=e19]
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - generic [ref=e22]: Default Volume
+            - generic [ref=e23]: 75%
+          - slider [ref=e24]: "75"
+        - generic [ref=e25]:
+          - generic [ref=e27]: Audio Quality
+          - combobox [ref=e28]:
+            - option "Low (64 kbps)"
+            - option "Medium (128 kbps)" [selected]
+            - option "High (256 kbps)"
+        - generic [ref=e30]:
+          - checkbox "Autoplay audio when generated" [checked] [ref=e31] [cursor=pointer]
+          - generic [ref=e32]: Autoplay audio when generated
+      - generic [ref=e33]:
+        - heading "Playback Settings" [level=2] [ref=e34]
+        - generic [ref=e35]:
+          - generic [ref=e37]: Default Mood
+          - combobox [ref=e38]:
+            - option "None" [selected]
+        - generic [ref=e39]:
+          - generic [ref=e41]: Default Duration (seconds)
+          - spinbutton [ref=e42]: "300"
+        - generic [ref=e44]:
+          - checkbox "Loop audio by default" [checked] [ref=e45] [cursor=pointer]
+          - generic [ref=e46]: Loop audio by default
+      - generic [ref=e47]:
+        - heading "Playlist Settings" [level=2] [ref=e48]
+        - generic [ref=e49]:
+          - generic [ref=e51]: Default Rotation Interval (minutes)
+          - spinbutton [ref=e52]: "5"
+        - generic [ref=e53]:
+          - generic [ref=e55]: Crossfade Duration (seconds)
+          - spinbutton [ref=e56]: "5"
+          - generic [ref=e57]: Time to blend between tracks (0 = no crossfade)
+        - generic [ref=e59]:
+          - checkbox "Shuffle playlists by default" [ref=e60] [cursor=pointer]
+          - generic [ref=e61]: Shuffle playlists by default
+      - generic [ref=e62]:
+        - heading "Appearance" [level=2] [ref=e63]
+        - generic [ref=e64]:
+          - generic [ref=e66]: Theme
+          - combobox [ref=e67]:
+            - option "Light"
+            - option "Dark"
+            - option "Auto (system)" [selected]
+        - generic [ref=e69]:
+          - checkbox "Show background visualizer" [checked] [ref=e70] [cursor=pointer]
+          - generic [ref=e71]: Show background visualizer
+        - generic [ref=e72]:
+          - generic [ref=e74]: Visualizer Style
+          - combobox [ref=e75]:
+            - option "Particles - Classic floating dots" [selected]
+            - option "Waves - Flowing grid waves"
+            - option "Nebula - Cosmic cloud"
+            - option "Grid - Retro wireframe"
+          - generic [ref=e76]: Choose your preferred background animation style
+      - generic [ref=e77]:
+        - heading "Data Management" [level=2] [ref=e78]
+        - generic [ref=e79]:
+          - generic [ref=e81]: Export / Import
+          - generic [ref=e82]:
+            - button "📥 Export Presets & Playlists" [ref=e83] [cursor=pointer]
+            - button "📤 Import Data" [ref=e84] [cursor=pointer]
+        - generic [ref=e85]:
+          - generic [ref=e87]: Clear Data
+          - button "🗑️ Clear All Presets & Playlists" [ref=e88] [cursor=pointer]
+          - generic [ref=e89]: "Warning: This action cannot be undone!"
+    - generic [ref=e90]:
+      - button "Reset to Defaults" [ref=e91] [cursor=pointer]
+      - button "Save Settings" [ref=e92] [cursor=pointer]
+```

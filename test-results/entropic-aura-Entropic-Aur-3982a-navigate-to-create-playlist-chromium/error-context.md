@@ -1,0 +1,44 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e6]:
+    - generic [ref=e7]:
+      - heading "Entropic Aura" [level=1] [ref=e8]
+      - generic [ref=e9]:
+        - link "Soundscape" [ref=e10] [cursor=pointer]:
+          - /url: /soundscape
+        - link "Presets" [ref=e11] [cursor=pointer]:
+          - /url: /presets
+        - link "Playlists" [ref=e12] [cursor=pointer]:
+          - /url: /playlists
+        - link "Settings" [ref=e13] [cursor=pointer]:
+          - /url: /settings
+  - generic [ref=e14]:
+    - generic [ref=e15]:
+      - heading "Playlists" [level=1] [ref=e16]
+      - button "+ Create Playlist" [active] [ref=e17] [cursor=pointer]
+    - generic [ref=e18]: "Failed to load playlists: Failed to load playlists"
+    - generic [ref=e20]:
+      - heading "Create Playlist" [level=2] [ref=e21]
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: Name
+          - textbox [ref=e25]
+        - generic [ref=e26]:
+          - generic [ref=e27]: Description
+          - textbox [ref=e28]
+        - generic [ref=e29]:
+          - generic [ref=e30]: Rotation Interval (seconds)
+          - spinbutton [ref=e31]: "300"
+          - generic [ref=e32]: How long to play each preset before switching
+        - generic [ref=e34]:
+          - checkbox "Shuffle" [ref=e35]
+          - text: Shuffle
+        - generic [ref=e37]:
+          - checkbox "Repeat" [checked] [ref=e38]
+          - text: Repeat
+        - generic [ref=e39]:
+          - button "Cancel" [ref=e40] [cursor=pointer]
+          - button "Create" [ref=e41] [cursor=pointer]
+```
