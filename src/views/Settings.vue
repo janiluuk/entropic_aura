@@ -136,8 +136,21 @@
           <div class="setting-item">
             <label>
               <input v-model="settings.appearance.showVisualizer" type="checkbox" />
-              <span class="label-text">Show audio visualizer</span>
+              <span class="label-text">Show background visualizer</span>
             </label>
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Visualizer Style</span>
+            </label>
+            <select v-model="settings.appearance.visualizerStyle" @change="changeVisualizerStyle" class="select-input">
+              <option value="particles">Particles - Classic floating dots</option>
+              <option value="waves">Waves - Flowing grid waves</option>
+              <option value="nebula">Nebula - Cosmic cloud</option>
+              <option value="grid">Grid - Retro wireframe</option>
+            </select>
+            <small>Choose your preferred background animation style</small>
           </div>
         </section>
 
@@ -220,7 +233,8 @@ const defaultSettings = {
   },
   appearance: {
     theme: 'auto',
-    showVisualizer: true
+    showVisualizer: true,
+    visualizerStyle: 'particles'
   }
 }
 
@@ -249,6 +263,18 @@ function saveSettings() {
   } catch (err) {
     showMessage('Failed to save settings: ' + err.message, 'error')
   }
+}
+
+function changeVisualizerStyle() {
+  // Save settings
+  saveSettings()
+  
+  // Notify visualizer component to change style
+  window.dispatchEvent(new CustomEvent('visualizerStyleChanged', {
+    detail: settings.value.appearance.visualizerStyle
+  }))
+  
+  showMessage(`Visualizer style changed to ${settings.value.appearance.visualizerStyle}`, 'success')
 }
 
 function resetToDefaults() {
