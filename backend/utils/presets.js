@@ -361,20 +361,15 @@ async function addFavorite(presetId) {
   const maxRetries = MAX_RETRIES;
   const retryDelay = RETRY_DELAY_MS;
   
+  // Verify preset exists (getPresetById has its own retry logic)
+  const preset = await getPresetById(presetId);
+  if (!preset) {
+    return false;
+  }
+  
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       await initPresetStorage();
-      
-      // Verify preset exists (getPresetById has its own retry logic)
-      const preset = await getPresetById(presetId);
-      if (!preset) {
-        // Preset not found - retry if not last attempt
-        if (attempt < maxRetries - 1) {
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-          continue;
-        }
-        return false;
-      }
       
       const favorites = await safeReadJSON(FAVORITES_FILE, []);
       
@@ -425,6 +420,11 @@ async function removeFavorite(presetId) {
     try {
       await initPresetStorage();
       const favorites = await safeReadJSON(FAVORITES_FILE, []);
+      
+      // Check if preset is in favorites before writing
+      if (!favorites.includes(presetId)) {
+        return true; // Already not in favorites
+      }
       
       const filtered = favorites.filter(id => id !== presetId);
       
