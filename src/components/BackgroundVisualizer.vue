@@ -131,8 +131,7 @@ function createParticles() {
     `,
     transparent: true,
     blending: THREE.AdditiveBlending,
-    depthWrite: false,
-    vertexColors: true
+    depthWrite: false
   })
 
   particles = new THREE.Points(geometry, material)
