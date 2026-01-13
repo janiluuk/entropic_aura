@@ -82,17 +82,21 @@ function toggleFavorite() {
 
 <style scoped>
 .preset-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
   border: 2px solid transparent;
 }
 
 .preset-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
+  border-color: rgba(66, 185, 131, 0.6);
 }
 
 .preset-card.is-favorite {
@@ -108,9 +112,10 @@ function toggleFavorite() {
 
 .preset-name {
   font-size: 1.25rem;
-  color: #2c3e50;
+  color: #ffffff;
   margin: 0;
   flex: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .favorite-btn {
@@ -118,7 +123,7 @@ function toggleFavorite() {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #ccc;
+  color: rgba(255, 255, 255, 0.3);
   transition: all 0.2s;
   padding: 0;
   line-height: 1;
@@ -134,7 +139,7 @@ function toggleFavorite() {
 }
 
 .preset-description {
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   margin: 0 0 1rem 0;
   line-height: 1.5;
 }

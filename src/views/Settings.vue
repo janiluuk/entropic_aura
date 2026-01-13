@@ -1,158 +1,207 @@
 <template>
   <div class="settings-page">
-    <div class="settings-container">
+    <div class="container">
       <h1>Settings</h1>
-      
-      <div v-if="saveMessage" class="save-message" :class="saveMessageType">
-        {{ saveMessage }}
-      </div>
-      
-      <div class="settings-section">
-        <h2>Appearance</h2>
-        
-        <div class="setting-item">
-          <label for="theme">Theme</label>
-          <select id="theme" v-model="settings.theme" @change="handleChange">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="auto">Auto</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="settings-section">
-        <h2>Audio</h2>
-        
-        <div class="setting-item">
-          <label for="audioQuality">Audio Quality</label>
-          <select id="audioQuality" v-model="settings.audioQuality" @change="handleChange">
-            <option value="low">Low (64 kbps)</option>
-            <option value="medium">Medium (96 kbps)</option>
-            <option value="high">High (128 kbps)</option>
-          </select>
-        </div>
-        
-        <div class="setting-item">
-          <label for="volume">
-            Volume
-            <span class="setting-value">{{ Math.round(settings.volume * 100) }}%</span>
-          </label>
-          <input
-            id="volume"
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            v-model.number="settings.volume"
-            @change="handleChange"
-          />
-        </div>
-        
-        <div class="setting-item checkbox-item">
-          <label>
-            <input id="autoplay" type="checkbox" v-model="settings.autoplay" @change="handleChange" />
-            <span>Autoplay next preset</span>
-          </label>
-        </div>
-        
-        <div class="setting-item">
-          <label for="defaultMood">Default Mood</label>
-          <select id="defaultMood" v-model="settings.defaultMood" @change="handleChange">
-            <option value="default">Default</option>
-            <option value="relaxing">Relaxing</option>
-            <option value="energizing">Energizing</option>
-            <option value="peaceful">Peaceful</option>
-            <option value="nature">Nature</option>
-            <option value="dark">Dark</option>
-            <option value="cinematic">Cinematic</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="settings-section">
-        <h2>Cache</h2>
-        
-        <div class="setting-item checkbox-item">
-          <label>
-            <input type="checkbox" v-model="settings.enableCache" @change="handleChange" />
-            <span>Enable audio caching</span>
-          </label>
-          <small>Cache audio files locally for faster playback</small>
-        </div>
-        
-        <div class="setting-item">
-          <label for="maxCacheSize">
-            Max Cache Size
-            <span class="setting-value">{{ settings.maxCacheSize }} MB</span>
-          </label>
-          <input
-            id="maxCacheSize"
-            type="range"
-            min="50"
-            max="500"
-            step="50"
-            v-model.number="settings.maxCacheSize"
-            @change="handleChange"
-          />
-        </div>
-        
-        <div class="cache-stats" v-if="cacheStats">
-          <h3>Cache Statistics</h3>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-label">Cached Items:</span>
-              <span class="stat-value">{{ cacheStats.count }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Used Space:</span>
-              <span class="stat-value">{{ formatBytes(cacheStats.totalSize) }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Usage:</span>
-              <span class="stat-value">{{ cacheStats.usage.toFixed(1) }}%</span>
+
+      <div class="settings-sections">
+        <!-- Audio Settings -->
+        <section class="settings-section">
+          <h2>Audio Settings</h2>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Default Volume</span>
+              <span class="label-value">{{ settings.audio.defaultVolume }}%</span>
+            </label>
+            <input
+              v-model.number="settings.audio.defaultVolume"
+              type="range"
+              min="0"
+              max="100"
+              class="slider"
+            />
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Audio Quality</span>
+            </label>
+            <select v-model="settings.audio.quality" class="select-input">
+              <option value="low">Low (64 kbps)</option>
+              <option value="medium">Medium (128 kbps)</option>
+              <option value="high">High (256 kbps)</option>
+            </select>
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <input v-model="settings.audio.autoplay" type="checkbox" />
+              <span class="label-text">Autoplay audio when generated</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Playback Settings -->
+        <section class="settings-section">
+          <h2>Playback Settings</h2>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Default Mood</span>
+            </label>
+            <select v-model="settings.playback.defaultMood" class="select-input">
+              <option value="">None</option>
+              <option v-for="mood in moods" :key="mood" :value="mood">
+                {{ mood }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Default Duration (seconds)</span>
+            </label>
+            <input
+              v-model.number="settings.playback.defaultDuration"
+              type="number"
+              min="30"
+              max="600"
+              step="30"
+              class="number-input"
+            />
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <input v-model="settings.playback.loopByDefault" type="checkbox" />
+              <span class="label-text">Loop audio by default</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Playlist Settings -->
+        <section class="settings-section">
+          <h2>Playlist Settings</h2>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Default Rotation Interval (minutes)</span>
+            </label>
+            <input
+              v-model.number="settings.playlist.defaultRotationInterval"
+              type="number"
+              min="1"
+              max="60"
+              class="number-input"
+            />
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Crossfade Duration (seconds)</span>
+            </label>
+            <input
+              v-model.number="settings.playlist.crossfadeDuration"
+              type="number"
+              min="0"
+              max="30"
+              class="number-input"
+            />
+            <small>Time to blend between tracks (0 = no crossfade)</small>
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <input v-model="settings.playlist.shuffleByDefault" type="checkbox" />
+              <span class="label-text">Shuffle playlists by default</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Appearance Settings -->
+        <section class="settings-section">
+          <h2>Appearance</h2>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Theme</span>
+            </label>
+            <select v-model="settings.appearance.theme" class="select-input">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto (system)</option>
+            </select>
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <input v-model="settings.appearance.showVisualizer" type="checkbox" />
+              <span class="label-text">Show background visualizer</span>
+            </label>
+          </div>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Visualizer Style</span>
+            </label>
+            <select v-model="settings.appearance.visualizerStyle" @change="changeVisualizerStyle" class="select-input">
+              <option value="particles">Particles - Classic floating dots</option>
+              <option value="waves">Waves - Flowing grid waves</option>
+              <option value="nebula">Nebula - Cosmic cloud</option>
+              <option value="grid">Grid - Retro wireframe</option>
+            </select>
+            <small>Choose your preferred background animation style</small>
+          </div>
+        </section>
+
+        <!-- Data Management -->
+        <section class="settings-section">
+          <h2>Data Management</h2>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Export / Import</span>
+            </label>
+            <div class="button-group">
+              <button @click="exportData" class="action-btn">
+                📥 Export Presets & Playlists
+              </button>
+              <button @click="triggerImport" class="action-btn">
+                📤 Import Data
+              </button>
+              <input
+                ref="fileInput"
+                type="file"
+                accept=".json"
+                style="display: none"
+                @change="importData"
+              />
             </div>
           </div>
-          <button @click="clearCache" class="btn-danger">Clear Cache</button>
-        </div>
-      </div>
-      
-      <div class="settings-section">
-        <h2>Notifications</h2>
-        
-        <div class="setting-item checkbox-item">
-          <label>
-            <input type="checkbox" v-model="settings.showNotifications" @change="handleChange" />
-            <span>Show notifications</span>
-          </label>
-        </div>
-      </div>
-      
-      <div class="settings-section">
-        <h2>Data Management</h2>
-        
-        <div class="button-group">
-          <button @click="exportSettings" class="btn-secondary">
-            Export Settings
-          </button>
-          <button @click="showImport = true" class="btn-secondary">
-            Import Settings
-          </button>
-          <button @click="resetSettings" class="btn-danger">
-            Reset to Defaults
-          </button>
-        </div>
-        
-        <div v-if="showImport" class="import-section">
-          <textarea
-            v-model="importData"
-            placeholder="Paste exported settings JSON here..."
-            rows="6"
-          />
-          <div class="button-group">
-            <button @click="importSettings" class="btn-primary">Import</button>
-            <button @click="showImport = false" class="btn-secondary">Cancel</button>
+          
+          <div class="setting-item">
+            <label>
+              <span class="label-text">Clear Data</span>
+            </label>
+            <button @click="clearAllData" class="danger-btn">
+              🗑️ Clear All Presets & Playlists
+            </button>
+            <small>Warning: This action cannot be undone!</small>
           </div>
-        </div>
+        </section>
+      </div>
+
+      <div class="actions">
+        <button @click="resetToDefaults" class="secondary-btn">
+          Reset to Defaults
+        </button>
+        <button @click="saveSettings" class="primary-btn">
+          Save Settings
+        </button>
+      </div>
+
+      <div v-if="message" :class="['message', messageType]">
+        {{ message }}
       </div>
     </div>
   </div>
@@ -160,344 +209,429 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import settingsService from '@/services/settingsService'
-import audioCacheService from '@/services/audioCacheService'
 
-const settings = ref(settingsService.getAll())
-const cacheStats = ref(null)
-const saveMessage = ref('')
-const saveMessageType = ref('success')
-const showImport = ref(false)
-const importData = ref('')
+const moods = ref([])
+const fileInput = ref(null)
+const message = ref('')
+const messageType = ref('success')
+
+const defaultSettings = {
+  audio: {
+    defaultVolume: 75,
+    quality: 'medium',
+    autoplay: true
+  },
+  playback: {
+    defaultMood: '',
+    defaultDuration: 300,
+    loopByDefault: true
+  },
+  playlist: {
+    defaultRotationInterval: 5,
+    crossfadeDuration: 5,
+    shuffleByDefault: false
+  },
+  appearance: {
+    theme: 'auto',
+    showVisualizer: true,
+    visualizerStyle: 'particles'
+  }
+}
+
+const settings = ref(JSON.parse(JSON.stringify(defaultSettings)))
 
 onMounted(async () => {
-  await loadCacheStats()
+  loadSettings()
+  await loadMoods()
 })
 
-function handleChange() {
-  settingsService.update(settings.value)
-  showSaveMessage('Settings saved', 'success')
-}
-
-function showSaveMessage(message, type = 'success') {
-  saveMessage.value = message
-  saveMessageType.value = type
-  setTimeout(() => {
-    saveMessage.value = ''
-  }, 3000)
-}
-
-async function loadCacheStats() {
-  try {
-    cacheStats.value = await audioCacheService.getStats()
-  } catch (error) {
-    console.error('Failed to load cache stats:', error)
-  }
-}
-
-async function clearCache() {
-  if (!confirm('Are you sure you want to clear the cache? This cannot be undone.')) {
-    return
-  }
-  
-  try {
-    await audioCacheService.clear()
-    await loadCacheStats()
-    showSaveMessage('Cache cleared successfully', 'success')
-  } catch (error) {
-    showSaveMessage('Failed to clear cache', 'error')
-  }
-}
-
-function exportSettings() {
-  const data = settingsService.export()
-  const blob = new Blob([data], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'entropic-aura-settings.json'
-  a.click()
-  URL.revokeObjectURL(url)
-  showSaveMessage('Settings exported', 'success')
-}
-
-function importSettings() {
-  try {
-    const success = settingsService.import(importData.value)
-    if (success) {
-      settings.value = settingsService.getAll()
-      showImport.value = false
-      importData.value = ''
-      showSaveMessage('Settings imported successfully', 'success')
-    } else {
-      showSaveMessage('Failed to import settings', 'error')
+function loadSettings() {
+  const saved = localStorage.getItem('entropicAuraSettings')
+  if (saved) {
+    try {
+      settings.value = JSON.parse(saved)
+    } catch (err) {
+      console.error('Failed to load settings:', err)
     }
-  } catch (error) {
-    showSaveMessage('Invalid settings format', 'error')
   }
 }
 
-function resetSettings() {
-  if (!confirm('Are you sure you want to reset all settings to defaults?')) {
+function saveSettings() {
+  try {
+    localStorage.setItem('entropicAuraSettings', JSON.stringify(settings.value))
+    showMessage('Settings saved successfully!', 'success')
+  } catch (err) {
+    showMessage('Failed to save settings: ' + err.message, 'error')
+  }
+}
+
+function changeVisualizerStyle() {
+  // Save settings
+  saveSettings()
+  
+  // Notify visualizer component to change style
+  window.dispatchEvent(new CustomEvent('visualizerStyleChanged', {
+    detail: settings.value.appearance.visualizerStyle
+  }))
+  
+  showMessage(`Visualizer style changed to ${settings.value.appearance.visualizerStyle}`, 'success')
+}
+
+function resetToDefaults() {
+  if (confirm('Reset all settings to defaults?')) {
+    settings.value = JSON.parse(JSON.stringify(defaultSettings))
+    saveSettings()
+    showMessage('Settings reset to defaults', 'success')
+  }
+}
+
+async function loadMoods() {
+  try {
+    const response = await fetch('/api/moods')
+    if (!response.ok) throw new Error('Failed to load moods')
+    
+    const data = await response.json()
+    moods.value = data.moods
+  } catch (err) {
+    console.error('Failed to load moods:', err)
+  }
+}
+
+async function exportData() {
+  try {
+    // Fetch all presets and playlists
+    const [presetsRes, playlistsRes] = await Promise.all([
+      fetch('/api/presets'),
+      fetch('/api/playlists')
+    ])
+    
+    if (!presetsRes.ok || !playlistsRes.ok) {
+      throw new Error('Failed to fetch data')
+    }
+    
+    const presets = await presetsRes.json()
+    const playlists = await playlistsRes.json()
+    
+    const exportData = {
+      version: 1,
+      exportDate: new Date().toISOString(),
+      presets: presets.presets,
+      playlists: playlists.playlists,
+      settings: settings.value
+    }
+    
+    // Create and download file
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `entropic-aura-backup-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    
+    showMessage('Data exported successfully!', 'success')
+  } catch (err) {
+    showMessage('Failed to export data: ' + err.message, 'error')
+  }
+}
+
+function triggerImport() {
+  fileInput.value.click()
+}
+
+async function importData(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  try {
+    const text = await file.text()
+    const data = JSON.parse(text)
+    
+    if (!data.version || !data.presets || !data.playlists) {
+      throw new Error('Invalid backup file format')
+    }
+    
+    // Import presets
+    for (const preset of data.presets) {
+      await fetch('/api/presets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(preset)
+      })
+    }
+    
+    // Import playlists
+    for (const playlist of data.playlists) {
+      await fetch('/api/playlists', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(playlist)
+      })
+    }
+    
+    // Import settings
+    if (data.settings) {
+      settings.value = data.settings
+      saveSettings()
+    }
+    
+    showMessage('Data imported successfully!', 'success')
+    
+    // Clear file input
+    event.target.value = ''
+  } catch (err) {
+    showMessage('Failed to import data: ' + err.message, 'error')
+  }
+}
+
+async function clearAllData() {
+  if (!confirm('Are you sure you want to delete ALL presets and playlists? This cannot be undone!')) {
     return
   }
   
-  settingsService.reset()
-  settings.value = settingsService.getAll()
-  showSaveMessage('Settings reset to defaults', 'success')
+  try {
+    // Fetch all presets and playlists
+    const [presetsRes, playlistsRes] = await Promise.all([
+      fetch('/api/presets'),
+      fetch('/api/playlists')
+    ])
+    
+    const presets = await presetsRes.json()
+    const playlists = await playlistsRes.json()
+    
+    // Delete all presets
+    for (const preset of presets.presets) {
+      await fetch(`/api/presets/${preset.id}`, { method: 'DELETE' })
+    }
+    
+    // Delete all playlists
+    for (const playlist of playlists.playlists) {
+      await fetch(`/api/playlists/${playlist.id}`, { method: 'DELETE' })
+    }
+    
+    showMessage('All data cleared successfully', 'success')
+  } catch (err) {
+    showMessage('Failed to clear data: ' + err.message, 'error')
+  }
 }
 
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+function showMessage(text, type = 'success') {
+  message.value = text
+  messageType.value = type
+  
+  setTimeout(() => {
+    message.value = ''
+  }, 5000)
 }
 </script>
 
 <style scoped>
 .settings-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: transparent;
   padding: 2rem;
 }
 
-.settings-container {
+.container {
   max-width: 800px;
   margin: 0 auto;
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  color: #2c3e50;
-  margin: 0 0 2rem 0;
+  margin: 0 0 2rem;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.save-message {
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  font-weight: 600;
-}
-
-.save-message.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.save-message.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+.settings-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .settings-section {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 2px solid #f0f0f0;
-}
-
-.settings-section:last-child {
-  border-bottom: none;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .settings-section h2 {
-  color: #2c3e50;
+  margin: 0 0 1.5rem;
+  color: #ffffff;
   font-size: 1.25rem;
-  margin: 0 0 1.5rem 0;
+  border-bottom: 2px solid rgba(66, 185, 131, 0.5);
+  padding-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .setting-item {
   margin-bottom: 1.5rem;
 }
 
+.setting-item:last-child {
+  margin-bottom: 0;
+}
+
 .setting-item label {
-  display: block;
-  font-weight: 600;
-  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 0.5rem;
 }
 
-.setting-value {
-  float: right;
+.label-text {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.label-value {
   color: #42b983;
   font-weight: 600;
 }
 
-.setting-item select,
-.setting-item input[type="range"] {
+.slider {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.setting-item select:focus {
-  outline: none;
-  border-color: #42b983;
-}
-
-.setting-item input[type="range"] {
-  padding: 0;
-  height: 8px;
+  height: 6px;
+  border-radius: 3px;
   background: #ddd;
-  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
 }
 
-.checkbox-item label {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.checkbox-item input[type="checkbox"] {
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
   width: 20px;
   height: 20px;
+  border-radius: 50%;
+  background: #42b983;
   cursor: pointer;
 }
 
-.checkbox-item small {
-  display: block;
-  margin-top: 0.5rem;
-  margin-left: 2rem;
-  color: #999;
-  font-size: 0.875rem;
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #42b983;
+  cursor: pointer;
+  border: none;
 }
 
-.cache-stats {
-  background: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-top: 1.5rem;
-}
-
-.cache-stats h3 {
-  margin: 0 0 1rem 0;
+.select-input,
+.number-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   font-size: 1rem;
-  color: #2c3e50;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: #666;
-}
-
-.stat-value {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #42b983;
+  font-family: inherit;
 }
 
 .button-group {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.btn-primary,
-.btn-secondary,
-.btn-danger {
+.action-btn,
+.danger-btn {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.btn-primary {
+.action-btn {
   background: #42b983;
   color: white;
 }
 
-.btn-primary:hover {
-  background: #38a375;
+.action-btn:hover {
+  background: #35a372;
 }
 
-.btn-secondary {
-  background: #f0f0f0;
-  color: #333;
-}
-
-.btn-secondary:hover {
-  background: #e0e0e0;
-}
-
-.btn-danger {
+.danger-btn {
   background: #dc3545;
   color: white;
 }
 
-.btn-danger:hover {
+.danger-btn:hover {
   background: #c82333;
 }
 
-.import-section {
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  background: #f9f9f9;
+small {
+  display: block;
+  margin-top: 0.5rem;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.primary-btn,
+.secondary-btn {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.primary-btn {
+  background: #42b983;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #35a372;
+}
+
+.secondary-btn {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.secondary-btn:hover {
+  background: #e0e0e0;
+}
+
+.message {
+  margin-top: 1rem;
+  padding: 1rem;
   border-radius: 8px;
+  font-weight: 600;
 }
 
-.import-section textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-family: monospace;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-  resize: vertical;
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
-.import-section textarea:focus {
-  outline: none;
-  border-color: #42b983;
+.message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 
-@media (max-width: 768px) {
-  .settings-page {
-    padding: 1rem;
-  }
-  
-  .settings-container {
-    padding: 1.5rem;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .button-group {
-    flex-direction: column;
-  }
-  
-  .button-group button {
-    width: 100%;
-  }
+input[type="checkbox"] {
+  margin-right: 0.75rem;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 </style>

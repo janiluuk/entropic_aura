@@ -43,24 +43,11 @@ export default ({ mode }) => {
     },
     server: {
       proxy: {
-        // with options: http://localhost:5173/api/bar-> http://jsonplaceholder.typicode.com/bar
-  /*      '/processed': {
-          target: 'https://api.dudeisland.eu',
+        // Proxy API requests to backend server
+        '/api': {
+          target: 'http://localhost:3000',
           changeOrigin: true,
         },
-        '/preview': {
-          target: 'https://api.dudeisland.eu',
-          changeOrigin: true,
-        },
-        '/videos': {
-          target: 'https://api.dudeisland.eu',
-          changeOrigin: true,
-        },
-        '/storage': {
-          target: 'https://api.dudeisland.eu',
-          changeOrigin: true,
-        },
-	*/
       },
       cors: { origin: "*" },
 
