@@ -1,4 +1,6 @@
 // Built-in fallback presets for when API is unavailable
+const TIMESTAMP = new Date().toISOString()
+
 export const FALLBACK_PRESETS = [
   {
     id: 'fallback-ocean-waves',
@@ -10,8 +12,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-forest-morning',
@@ -23,8 +25,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-rain-window',
@@ -36,8 +38,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-cafe',
@@ -49,8 +51,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-meditation',
@@ -62,8 +64,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-night-city',
@@ -75,8 +77,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-mountain-stream',
@@ -88,8 +90,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-fireplace',
@@ -101,8 +103,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-scifi-lab',
@@ -114,8 +116,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-tropical-beach',
@@ -127,8 +129,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-thunderstorm',
@@ -140,8 +142,8 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   },
   {
     id: 'fallback-workout',
@@ -153,7 +155,7 @@ export const FALLBACK_PRESETS = [
     parameters: { duration: 45 },
     timesPlayed: 0,
     isFavorite: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: TIMESTAMP,
+    updatedAt: TIMESTAMP
   }
 ]

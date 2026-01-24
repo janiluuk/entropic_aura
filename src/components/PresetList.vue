@@ -152,7 +152,6 @@ async function fetchPresets() {
   } catch (err) {
     // If API is unavailable and not in favorites mode, use fallback presets
     if (!props.favoritesOnly) {
-      console.log('API unavailable, using fallback presets')
       presets.value = FALLBACK_PRESETS
       error.value = '' // Clear error since we have fallback data
     } else {
