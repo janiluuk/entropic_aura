@@ -59,6 +59,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, defineProps, defineEmits } from 'vue'
 import PresetCard from './PresetCard.vue'
+import { FALLBACK_PRESETS } from '@/data/fallbackPresets'
 
 const props = defineProps({
   title: {
@@ -149,7 +150,14 @@ async function fetchPresets() {
     const data = await response.json()
     presets.value = props.favoritesOnly ? data.favorites : data.presets
   } catch (err) {
-    error.value = err.message || 'Failed to load presets'
+    // If API is unavailable and not in favorites mode, use fallback presets
+    if (!props.favoritesOnly) {
+      console.log('API unavailable, using fallback presets')
+      presets.value = FALLBACK_PRESETS
+      error.value = '' // Clear error since we have fallback data
+    } else {
+      error.value = err.message || 'Failed to load presets'
+    }
   } finally {
     loading.value = false
   }
