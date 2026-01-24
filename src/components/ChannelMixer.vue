@@ -93,6 +93,7 @@ let audioContext = null
 let analyser = null
 let source = null
 let splitter = null
+let gainNodes = []
 let channelAnalysers = []
 let animationId = null
 
@@ -108,7 +109,10 @@ function updateVolume(channelId, value) {
   const channel = channels.value.find(ch => ch.id === channelId)
   if (channel) {
     channel.volume = parseFloat(value)
-    emit('volume-change', { channelId, volume: channel.volume })
+    // Update gain node if it exists
+    if (gainNodes[channelId]) {
+      gainNodes[channelId].gain.value = channel.muted ? 0 : channel.volume
+    }
   }
 }
 
@@ -116,7 +120,10 @@ function toggleMute(channelId) {
   const channel = channels.value.find(ch => ch.id === channelId)
   if (channel) {
     channel.muted = !channel.muted
-    emit('volume-change', { channelId, volume: channel.muted ? 0 : channel.volume })
+    // Update gain node if it exists
+    if (gainNodes[channelId]) {
+      gainNodes[channelId].gain.value = channel.muted ? 0 : channel.volume
+    }
   }
 }
 
@@ -124,7 +131,10 @@ function resetAll() {
   channels.value.forEach(channel => {
     channel.volume = 1.0
     channel.muted = false
-    emit('volume-change', { channelId: channel.id, volume: 1.0 })
+    // Update gain node if it exists
+    if (gainNodes[channel.id]) {
+      gainNodes[channel.id].gain.value = 1.0
+    }
   })
 }
 
@@ -132,7 +142,10 @@ function muteAll() {
   const shouldMute = !allMuted.value
   channels.value.forEach(channel => {
     channel.muted = shouldMute
-    emit('volume-change', { channelId: channel.id, volume: shouldMute ? 0 : channel.volume })
+    // Update gain node if it exists
+    if (gainNodes[channel.id]) {
+      gainNodes[channel.id].gain.value = shouldMute ? 0 : channel.volume
+    }
   })
 }
 
@@ -148,6 +161,9 @@ async function setupAudioAnalysis() {
       channelAnalysers.forEach(analyser => {
         if (analyser) analyser.disconnect()
       })
+      gainNodes.forEach(gain => {
+        if (gain) gain.disconnect()
+      })
       await audioContext.close()
     }
     
@@ -159,6 +175,8 @@ async function setupAudioAnalysis() {
       source = audioContext.createMediaElementSource(props.audio)
     } catch (err) {
       console.warn('MediaElementSource already exists for this audio element')
+      // If source already exists, we can't create visualization for this element
+      // This is a limitation of the Web Audio API
       return
     }
     
@@ -166,21 +184,27 @@ async function setupAudioAnalysis() {
     splitter = audioContext.createChannelSplitter(4)
     source.connect(splitter)
     
-    // Create analyser for each channel
+    // Create a single merger to combine all channels back to output
+    const merger = audioContext.createChannelMerger(4)
+    merger.connect(audioContext.destination)
+    
+    // Create analyser and gain node for each channel
     channelAnalysers = []
+    gainNodes = []
     for (let i = 0; i < 4; i++) {
       const analyser = audioContext.createAnalyser()
       analyser.fftSize = 256
-      splitter.connect(analyser, i)
       
-      // Merge back to output
-      const merger = audioContext.createChannelMerger(4)
-      analyser.connect(merger, 0, i)
-      if (i === 3) {
-        merger.connect(audioContext.destination)
-      }
+      const gainNode = audioContext.createGain()
+      gainNode.gain.value = channels.value[i].volume
+      
+      // Connect: splitter -> analyser -> gain -> merger
+      splitter.connect(analyser, i)
+      analyser.connect(gainNode)
+      gainNode.connect(merger, 0, i)
       
       channelAnalysers.push(analyser)
+      gainNodes.push(gainNode)
     }
     
     // Start visualization
@@ -265,6 +289,9 @@ onUnmounted(async () => {
   }
   channelAnalysers.forEach(analyser => {
     if (analyser) analyser.disconnect()
+  })
+  gainNodes.forEach(gain => {
+    if (gain) gain.disconnect()
   })
   if (audioContext) {
     await audioContext.close()

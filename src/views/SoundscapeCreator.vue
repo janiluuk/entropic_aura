@@ -49,7 +49,7 @@
 
     <AudioVisualizer v-if="audioSrc && !loading" :audio="audioPlayer" />
     
-    <ChannelMixer v-if="audioSrc && !loading" :audio="audioPlayer" @volume-change="handleVolumeChange" />
+    <ChannelMixer v-if="audioSrc && !loading" :audio="audioPlayer" />
     
     <audio
       v-if="audioSrc"
@@ -196,12 +196,6 @@ function downloadAudio() {
   link.href = audioSrc.value
   link.download = filename
   link.click()
-}
-
-function handleVolumeChange({ channelId, volume }) {
-  console.log(`Channel ${channelId} volume changed to ${volume}`)
-  // Volume changes are handled by the ChannelMixer component internally
-  // This is just for logging or future integration with backend
 }
 </script>
 
