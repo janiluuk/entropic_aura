@@ -2,10 +2,34 @@
 
 **Entropic Aura** is a live generated atmosphere application that streams continuous audio to users. It uses ComfyUI as a backend to generate ambient soundscapes from presets or user prompts.
 
+## Screenshots
+
+### Soundscape Creator
+Create custom soundscapes with text prompts or voice input, with 4-channel audio mixing capabilities.
+
+![Soundscape Creator](https://github.com/user-attachments/assets/25109aa5-9f52-4286-95ac-cf2f8907af11)
+
+### Preset Manager
+Browse, search, and manage your saved atmosphere presets with favorites support.
+
+![Preset Manager](https://github.com/user-attachments/assets/fef38093-f303-47f8-b762-1c914e3e2f7b)
+
+### Playlist Manager
+Create and manage playlists with automatic rotation and shuffle modes.
+
+![Playlist Manager](https://github.com/user-attachments/assets/b059c4a5-7070-450c-ba54-e45ed852df7a)
+
+### Settings
+Customize audio quality, playback preferences, visualizations, and manage your data.
+
+![Settings](https://github.com/user-attachments/assets/e0d18894-16e7-47ce-8f25-9f5893de59b7)
+
 ## Features
 
 ### Currently Implemented
-- **Live Audio Generation**: Generate atmospheric audio using ComfyUI backend
+- **Live Audio Generation**: Generate atmospheric audio using ComfyUI backend with 4-channel output
+- **4-Channel Audio Mixer**: Fine-tune soundscapes with independent volume control for each of the 4 audio channels
+- **Advanced Mixer Controls**: Expandable mixer section with per-channel visualizers and mute controls (hidden by default)
 - **Text Prompts**: Create soundscapes from text descriptions
 - **Mood Presets**: Quick selection of mood-based atmospheres (Relaxing, Energizing, Peaceful, Dark, Cinematic, Nature)
 - **Continuous Streaming**: Smooth audio playback via AAC streaming at 128 kbps
