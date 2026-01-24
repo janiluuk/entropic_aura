@@ -125,6 +125,34 @@ click **Generate** to hear the streaming result in the built‑in audio player.
 
 Register a user from `#/register` or login using pre-created users for other features.
 
+## 4-Channel Audio Mixer
+
+All generated soundscapes are created with **4 audio channels**, allowing for fine-tuned control over the audio output. The mixer provides:
+
+### Features
+- **Individual Channel Control**: Adjust volume for each of the 4 channels independently
+- **Real-Time Visualization**: Each channel has its own sound level indicator showing frequency data
+- **Mute Controls**: Quickly mute/unmute individual channels
+- **Master Controls**: Reset all channels to default or mute/unmute all at once
+- **Collapsible Interface**: The mixer is hidden by default under "Advanced Settings" to keep the UI clean
+
+### Usage
+1. Generate a soundscape using the Soundscape Creator
+2. Once audio starts playing, locate the "Advanced Settings" section below the audio player
+3. Click on "▶ Advanced Settings" to expand the mixer controls
+4. Use the volume sliders to adjust individual channels (0-100%)
+5. Monitor each channel's activity through the colored visualizers:
+   - Channel 1: Red
+   - Channel 2: Green
+   - Channel 3: Blue
+   - Channel 4: Yellow
+
+### Technical Details
+- Audio is generated with 4 channels in the backend using FFmpeg
+- Frontend uses Web Audio API for channel splitting and analysis
+- Each channel can be independently controlled without affecting others
+- AAC encoding at 128 kbps maintains quality across all channels
+
 ## API Reference
 
 ### Audio Streaming
@@ -455,6 +483,8 @@ Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
 - ✅ Implement 4 simultaneous track generation
 - ✅ Track state management (generating, ready, playing, fading, expired)
 - ✅ Individual track volume control
+- ✅ 4-channel audio generation and mixing
+- ✅ Per-channel volume control with visualizers
 - ⏳ Real-time audio mixing engine (backend ready, frontend integration pending)
 - ⏳ Crossfade transitions between tracks (backend ready, frontend integration pending)
 
@@ -471,4 +501,5 @@ Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
 - ✅ Audio visualization components
 - ✅ User settings and preferences
 - ✅ Export/import presets and playlists
+- ✅ 4-channel audio mixer with advanced controls
 - ⏳ Real-time audio mixing with crossfading (backend infrastructure ready)
