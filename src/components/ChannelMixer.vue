@@ -303,12 +303,13 @@ onUnmounted(async () => {
 <style scoped>
 .channel-mixer {
   margin: 1.5rem 0;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: none;
+  border-radius: 24px;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .mixer-header {
@@ -361,10 +362,11 @@ onUnmounted(async () => {
 }
 
 .channel-control {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.25rem;
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .channel-header {
@@ -388,7 +390,7 @@ onUnmounted(async () => {
 
 .sound-indicator {
   margin-bottom: 0.75rem;
-  border-radius: 4px;
+  border-radius: 12px;
   overflow: hidden;
   background: #1a1a1a;
 }
@@ -445,23 +447,25 @@ onUnmounted(async () => {
 
 .mute-btn {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 0.65rem;
+  border: none;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
   cursor: pointer;
   font-size: 1.2rem;
-  transition: all 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .mute-btn:hover {
   background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .mute-btn.muted {
   background: rgba(255, 100, 100, 0.3);
-  border-color: rgba(255, 100, 100, 0.5);
+  box-shadow: 0 2px 8px rgba(255, 100, 100, 0.3);
 }
 
 .master-controls {
@@ -473,36 +477,38 @@ onUnmounted(async () => {
 }
 
 .master-controls button {
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.75rem;
   border: none;
-  border-radius: 6px;
-  background: rgba(66, 185, 131, 0.8);
+  border-radius: 20px;
+  background: linear-gradient(135deg, #42b983 0%, #38a375 100%);
   color: white;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 600;
   transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(66, 185, 131, 0.3);
 }
 
 .master-controls button:hover {
-  background: rgba(66, 185, 131, 1);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 16px rgba(66, 185, 131, 0.5);
 }
 
 .btn-reset {
-  background: rgba(100, 150, 200, 0.8) !important;
+  background: linear-gradient(135deg, #6495ED 0%, #4169E1 100%) !important;
+  box-shadow: 0 4px 12px rgba(100, 150, 200, 0.3) !important;
 }
 
 .btn-reset:hover {
-  background: rgba(100, 150, 200, 1) !important;
+  box-shadow: 0 6px 16px rgba(100, 150, 200, 0.5) !important;
 }
 
 .btn-mute-all {
-  background: rgba(200, 100, 100, 0.8) !important;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  box-shadow: 0 4px 12px rgba(200, 100, 100, 0.3) !important;
 }
 
 .btn-mute-all:hover {
-  background: rgba(200, 100, 100, 1) !important;
+  box-shadow: 0 6px 16px rgba(200, 100, 100, 0.5) !important;
 }
 </style>

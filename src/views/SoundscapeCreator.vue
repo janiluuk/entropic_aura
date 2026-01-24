@@ -203,14 +203,15 @@ function downloadAudio() {
 .soundscape-creator {
   max-width: 700px;
   margin: 2rem auto;
-  padding: 2rem;
+  padding: 2.5rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: none;
+  border-radius: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 
+              0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 h1 {
@@ -241,15 +242,16 @@ textarea {
   width: 100%;
   min-height: 100px;
   margin-bottom: 0.25rem;
-  padding: 0.75rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem 1.25rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 1rem;
   font-family: inherit;
   resize: vertical;
   transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 textarea::placeholder {
@@ -258,8 +260,9 @@ textarea::placeholder {
 
 textarea:focus {
   outline: none;
-  border-color: #42b983;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 20px rgba(66, 185, 131, 0.3),
+              0 0 0 3px rgba(66, 185, 131, 0.2);
 }
 
 textarea:disabled {
@@ -283,28 +286,30 @@ textarea:disabled {
 }
 
 .mood-tags button {
-  padding: 0.5rem 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
   cursor: pointer;
   font-size: 0.9rem;
+  font-weight: 500;
   transition: all 0.3s;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .mood-tags button:hover:not(:disabled) {
-  border-color: #42b983;
-  background: rgba(66, 185, 131, 0.2);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .mood-tags button.active {
-  background: #42b983;
+  background: linear-gradient(135deg, #42b983 0%, #38a375 100%);
   color: #fff;
-  border-color: #42b983;
+  box-shadow: 0 4px 16px rgba(66, 185, 131, 0.4);
 }
 
 .mood-tags button:disabled {
@@ -321,21 +326,21 @@ textarea:disabled {
 }
 
 .actions button {
-  padding: 0.75rem 1.5rem;
+  padding: 0.9rem 2rem;
   border: none;
-  border-radius: 8px;
-  background: #42b983;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #42b983 0%, #38a375 100%);
   color: white;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
   transition: all 0.3s;
+  box-shadow: 0 6px 20px rgba(66, 185, 131, 0.35);
 }
 
 .actions button:hover:not(:disabled) {
-  background: #38a375;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(66, 185, 131, 0.5);
 }
 
 .actions button:disabled {
@@ -371,7 +376,7 @@ textarea:disabled {
 audio {
   width: 100%;
   margin-top: 1rem;
-  border-radius: 8px;
+  border-radius: 20px;
 }
 </style>
 
