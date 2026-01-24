@@ -174,9 +174,9 @@ async function setupAudioAnalysis() {
     try {
       source = audioContext.createMediaElementSource(props.audio)
     } catch (err) {
-      console.warn('MediaElementSource already exists for this audio element')
+      console.warn('MediaElementSource already exists - audio visualization unavailable for this element. Mixer controls will not function properly.')
       // If source already exists, we can't create visualization for this element
-      // This is a limitation of the Web Audio API
+      // This is a limitation of the Web Audio API - a MediaElementSource can only be created once per audio element
       return
     }
     
@@ -196,7 +196,8 @@ async function setupAudioAnalysis() {
       analyser.fftSize = 256
       
       const gainNode = audioContext.createGain()
-      gainNode.gain.value = channels.value[i].volume
+      // Set initial gain based on volume and mute state
+      gainNode.gain.value = channels.value[i].muted ? 0 : channels.value[i].volume
       
       // Connect: splitter -> analyser -> gain -> merger
       splitter.connect(analyser, i)
