@@ -200,7 +200,6 @@ function handleAudioLoaded() {
 .stop-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(220, 53, 69, 0.5);
-}
   background: #c82333;
 }
 
