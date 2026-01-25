@@ -82,25 +82,26 @@ function toggleFavorite() {
 
 <style scoped>
 .preset-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: none;
+  border-radius: 24px;
+  padding: 1.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3),
+              0 0 1px rgba(255, 255, 255, 0.1) inset;
   transition: all 0.3s ease;
-  border: 2px solid transparent;
 }
 
 .preset-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  transform: translateY(-2px);
-  border-color: rgba(66, 185, 131, 0.6);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4),
+              0 0 0 2px rgba(66, 185, 131, 0.3);
+  transform: translateY(-4px);
 }
 
 .preset-card.is-favorite {
-  border-color: #ff6b6b;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3),
+              0 0 0 2px rgba(255, 107, 107, 0.4) inset;
 }
 
 .preset-header {
@@ -152,11 +153,12 @@ function toggleFavorite() {
 }
 
 .mood-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.875rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
   font-weight: 600;
   text-transform: capitalize;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .mood-relaxing {
@@ -207,11 +209,13 @@ function toggleFavorite() {
 }
 
 .tag {
-  padding: 0.25rem 0.5rem;
-  background: #f0f0f0;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: #666;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.35rem 0.85rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .preset-actions {
@@ -221,40 +225,43 @@ function toggleFavorite() {
 }
 
 .preset-actions button {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
   font-weight: 600;
 }
 
 .btn-primary {
-  background: #42b983;
+  background: linear-gradient(135deg, #42b983 0%, #38a375 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(66, 185, 131, 0.3);
 }
 
 .btn-primary:hover {
-  background: #38a375;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(66, 185, 131, 0.5);
 }
 
 .btn-secondary {
-  background: #f0f0f0;
-  color: #333;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
 }
 
 .btn-secondary:hover {
-  background: #e0e0e0;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .btn-danger {
-  background: #dc3545;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
 }
 
 .btn-danger:hover {
-  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
 }
 </style>

@@ -110,7 +110,7 @@ async function generateAndStream(text, res, mood = '', host = process.env.COMFY_
     .setFfmpegPath(ffmpegPath)
     .inputOptions(['-f wav'])
     .complexFilter(filters)
-    .audioChannels(2)
+    .audioChannels(4)
     .audioCodec('aac')
     .audioBitrate('128k')
     .format('adts')

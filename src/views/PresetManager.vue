@@ -131,17 +131,16 @@ function handleAudioLoaded() {
 }
 
 .tabs button {
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.75rem;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  border-radius: 8px 8px 0 0;
+  border-radius: 20px 20px 0 0;
   transition: all 0.3s;
 }
 
@@ -151,10 +150,9 @@ function handleAudioLoaded() {
 }
 
 .tabs button.active {
-  background: rgba(66, 185, 131, 0.8);
+  background: linear-gradient(135deg, #42b983 0%, #38a375 100%);
   color: white;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(66, 185, 131, 0.3);
 }
 
 .player-section {
@@ -162,13 +160,14 @@ function handleAudioLoaded() {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(26, 26, 26, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 2px solid #42b983;
+  background: rgba(26, 26, 26, 0.98);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-top: none;
   padding: 1.5rem 2rem;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
   z-index: 1000;
+  border-radius: 24px 24px 0 0;
 }
 
 .player-header {
@@ -187,17 +186,20 @@ function handleAudioLoaded() {
 }
 
 .stop-btn {
-  padding: 0.5rem 1rem;
-  background: #dc3545;
+  padding: 0.7rem 1.5rem;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 .stop-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 53, 69, 0.5);
   background: #c82333;
 }
 

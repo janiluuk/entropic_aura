@@ -59,6 +59,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, defineProps, defineEmits } from 'vue'
 import PresetCard from './PresetCard.vue'
+import { FALLBACK_PRESETS } from '@/data/fallbackPresets'
 
 const props = defineProps({
   title: {
@@ -149,7 +150,13 @@ async function fetchPresets() {
     const data = await response.json()
     presets.value = props.favoritesOnly ? data.favorites : data.presets
   } catch (err) {
-    error.value = err.message || 'Failed to load presets'
+    // If API is unavailable and not in favorites mode, use fallback presets
+    if (!props.favoritesOnly) {
+      presets.value = FALLBACK_PRESETS
+      error.value = '' // Clear error since we have fallback data
+    } else {
+      error.value = err.message || 'Failed to load presets'
+    }
   } finally {
     loading.value = false
   }
@@ -259,15 +266,16 @@ async function handleToggleFavorite(preset) {
 .search-input,
 .mood-filter,
 .sort-select {
-  padding: 0.75rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 0.85rem 1.25rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   color: #ffffff;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 1rem;
   transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .search-input::placeholder {
@@ -289,8 +297,9 @@ async function handleToggleFavorite(preset) {
 .mood-filter:focus,
 .sort-select:focus {
   outline: none;
-  border-color: #42b983;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 20px rgba(66, 185, 131, 0.3),
+              0 0 0 3px rgba(66, 185, 131, 0.2);
 }
 
 .loading {
@@ -315,12 +324,15 @@ async function handleToggleFavorite(preset) {
 }
 
 .error-message {
-  background: #fee;
-  border: 1px solid #fcc;
-  color: #c33;
-  padding: 1rem;
-  border-radius: 8px;
+  background: rgba(220, 53, 69, 0.15);
+  border: none;
+  color: #ff6b6b;
+  padding: 1.25rem;
+  border-radius: 20px;
   text-align: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px rgba(220, 53, 69, 0.2);
 }
 
 .empty-state {
