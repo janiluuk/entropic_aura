@@ -7,7 +7,7 @@
 ### Soundscape Creator
 The main page for creating custom atmospheric soundscapes. This is where the magic happens!
 
-![Soundscape Creator - Initial View](https://github.com/user-attachments/assets/6c50a240-6135-426b-b41e-ea7e869afbce)
+![Soundscape Creator - Initial View](screenshots/01-soundscape-creator-initial.png)
 
 **Features:**
 - **Text Prompt Input**: Describe your desired soundscape in natural language (e.g., "peaceful forest with birdsong" or "rain on a tin roof")
@@ -21,12 +21,22 @@ The main page for creating custom atmospheric soundscapes. This is where the mag
   - Master controls to reset all or mute/unmute all channels
 - **Save as Preset**: Quickly save your current soundscape configuration for later use
 
-![Soundscape Creator - With All Mood Buttons](https://github.com/user-attachments/assets/c928123a-f96f-41fc-8a88-339c57f99394)
+![Soundscape Creator - With Prompt](screenshots/05-soundscape-with-prompt.png)
+
+The updated design shows enhanced visual elements and improved user experience:
+
+![Soundscape Creator - Updated Design](screenshots/06-soundscape-updated-design.png)
+
+The interface also features a translucent navigation bar that adapts to the current page:
+
+![Soundscape Creator - Navigation](screenshots/08-translucent-nav-soundscape.png)
+
+![Soundscape Creator - Alternative Navigation](screenshots/soundscape_nav.png)
 
 ### Preset Manager
 Browse, search, and manage your saved atmosphere presets. This is your personal library of soundscapes.
 
-![Preset Manager](https://github.com/user-attachments/assets/39316299-0035-4e2e-a91b-0d537c4cd23c)
+![Preset Manager](screenshots/02-presets-manager.png)
 
 **Features:**
 - **Search Bar**: Quick search across preset names, descriptions, and prompts
@@ -41,6 +51,16 @@ Browse, search, and manage your saved atmosphere presets. This is your personal 
   - Quick actions: Play, Edit, Delete, Favorite/Unfavorite
 - **Create New**: Button to create a new preset from scratch
 - **Grid Layout**: Responsive grid that adapts to your screen size
+
+The preset manager also includes fallback sample data to help you get started:
+
+![Preset Manager - With Sample Data](screenshots/07-presets-with-fallback-data.png)
+
+And features the translucent navigation:
+
+![Preset Manager - Navigation](screenshots/09-translucent-nav-presets.png)
+
+![Preset Manager - Alternative Navigation](screenshots/presets_nav.png)
 
 ### Playlist Manager
 Create and manage playlists that automatically rotate between different atmospheres.
