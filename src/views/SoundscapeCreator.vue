@@ -31,14 +31,17 @@
     </div>
 
     <div class="actions">
-      <button @click="toggleRecording" :disabled="loading">
-        {{ recording ? 'Stop Recording' : '🎤 Speak' }}
+      <button @click="toggleRecording" :disabled="loading" title="Voice Input">
+        <i :class="recording ? 'pi pi-stop-circle' : 'pi pi-microphone'"></i>
+        <span>{{ recording ? 'Stop' : 'Speak' }}</span>
       </button>
-      <button @click="generate" :disabled="loading || !prompt">
-        {{ loading ? 'Generating...' : '▶️ Generate' }}
+      <button @click="generate" :disabled="loading || !prompt" class="generate-btn" title="Generate Soundscape">
+        <i :class="loading ? 'pi pi-spin pi-spinner' : 'pi pi-play'"></i>
+        <span>{{ loading ? 'Generating...' : 'Generate' }}</span>
       </button>
-      <button v-if="audioSrc" @click="downloadAudio" :disabled="loading">
-        💾 Download
+      <button v-if="audioSrc" @click="downloadAudio" :disabled="loading" title="Download Audio">
+        <i class="pi pi-download"></i>
+        <span>Download</span>
       </button>
     </div>
 
@@ -336,6 +339,13 @@ textarea:disabled {
   font-weight: 600;
   transition: all 0.3s;
   box-shadow: 0 6px 20px rgba(66, 185, 131, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actions button i {
+  font-size: 1.1rem;
 }
 
 .actions button:hover:not(:disabled) {
