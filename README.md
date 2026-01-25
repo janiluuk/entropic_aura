@@ -135,10 +135,10 @@ Customize your Entropic Aura experience with comprehensive settings.
 - **Playlist Automation**: Automatic preset switching with shuffle and repeat modes
 - **User Settings**: Customize audio quality, playback preferences, and appearance
 - **Data Export/Import**: Backup and restore presets, playlists, and settings
+- **Real-Time Audio Mixing**: Advanced mixing with dynamic crossfading between tracks
+- **Crossfade Transitions**: Seamless blending between different atmospheres
 
 ### Planned Features
-- **Real-Time Audio Mixing**: Advanced mixing of 4 tracks with dynamic crossfading
-- **Enhanced Crossfade Transitions**: Seamless blending between different atmospheres
 - **Advanced Audio Effects**: Real-time filter adjustment and custom effect chains
 
 ## Architecture
@@ -173,51 +173,34 @@ an FFmpeg filter chain.
 
 ## Development
 
-- Front‑end dev server: `npm run dev` (http://localhost:8080)
-- Audio backend: `npm run api` (http://localhost:3000)
-
-## COMFY & FFmpeg
-
-The backend calls a ComfyUI server to synthesize audio then pipes it through
-`fluent-ffmpeg` with the bundled `ffmpeg-static` binary. Filters apply
-compression, a high‑pass, echo and limiter before outputting AAC at 128 kbps.
-
-By default it connects to `127.0.0.1:8188`. Point to another host with the
-`COMFY_HOST` environment variable:
+Start the frontend and backend servers:
 
 ```bash
-COMFY_HOST=192.168.1.50:8188 npm run api
+# Frontend dev server (http://localhost:8080)
+npm run dev
+
+# Backend API server (http://localhost:3000) - in another terminal
+npm run api
 ```
 
-Each worker provides an FFmpeg binary used to transcode and stream audio in
-AAC at 128 kbps.
+Visit [http://localhost:8080/soundscape](http://localhost:8080/soundscape) to create soundscapes.
 
-`docker-compose.yml` includes an `ffmpeg-worker` service that supplies FFmpeg
-binaries for transcoding. Build and start everything with:
+### Docker Support
+
+For Docker deployment with FFmpeg workers:
 
 ```bash
 docker compose up --build
 ```
 
-1. Navigate in your repo folder: cd `entropic_aura`
-2. Install project dependencies: `npm install`
-3. Create a new .env file: `cp .env.example .env`
-4. `VUE_APP_BASE_URL` should contain the URL of your App
- (eg. http://localhost:8080/)
-5. `VUE_APP_API_BASE_URL` should contain the URL of JSON-API server (eg. http://localhost:3000/api/v1)
-6. Run `npm run dev` to start the application in a local development environment or `npm run build` to build release distributables.
-7. In another terminal, launch the audio backend with `npm run api`.
+### ComfyUI Configuration
 
-Integration tests for the backend live in `backend/test/`. Run them with:
+The backend connects to a ComfyUI server at `127.0.0.1:8188` by default. To use a different host:
 
 ```bash
-npm test
+COMFY_HOST=192.168.1.50:8188 npm run api
 ```
 
-Visit [http://localhost:8080/soundscape](http://localhost:8080/soundscape) and
-click **Generate** to hear the streaming result in the built‑in audio player.
-
-Register a user from `#/register` or login using pre-created users for other features.
 
 ## 4-Channel Audio Mixer
 
@@ -247,322 +230,25 @@ All generated soundscapes are created with **4 audio channels**, allowing for fi
 - Each channel can be independently controlled without affecting others
 - AAC encoding at 128 kbps maintains quality across all channels
 
-## API Reference
+## Testing
 
-### Audio Streaming
+Integration tests for the backend live in `backend/test/`. Run them with:
 
-#### `GET /api/stream`
-Stream generated audio based on text prompt and mood.
-
-**Query Parameters:**
-- `text` (required): Text prompt for audio generation (max 500 characters)
-- `mood` (optional): Mood preset (Relaxing, Energizing, Peaceful, Dark, Cinematic, Nature)
-
-**Response:** Audio stream (AAC, 128 kbps)
-
-### Track Management
-
-#### `GET /api/tracks`
-Get all tracks and track pool status.
-
-**Response:**
-```json
-{
-  "status": {
-    "totalTracks": 2,
-    "activeTracks": 2,
-    "maxTracks": 4,
-    "canAddTrack": true,
-    "tracksByState": {
-      "generating": 1,
-      "ready": 1,
-      "playing": 0,
-      "fading": 0,
-      "expired": 0
-    }
-  },
-  "tracks": [...]
-}
+```bash
+npm test
 ```
 
-#### `POST /api/tracks`
-Create a new audio track.
+For frontend tests:
 
-**Request Body:**
-```json
-{
-  "prompt": "peaceful forest sounds",
-  "mood": "Relaxing",
-  "volume": 0.8,
-  "duration": 45
-}
+```bash
+npm run test:frontend
 ```
 
-**Response:** `201 Created` with track object
+For end-to-end tests:
 
-#### `GET /api/tracks/:id`
-Get specific track by ID.
-
-#### `PATCH /api/tracks/:id`
-Update track state or volume.
-
-**Request Body:**
-```json
-{
-  "state": "ready",
-  "volume": 0.5
-}
+```bash
+npm run test:e2e
 ```
-
-#### `DELETE /api/tracks/:id`
-Remove track from pool.
-
-### Preset Management
-
-#### `GET /api/presets`
-Get all presets with optional filters.
-
-**Query Parameters:**
-- `mood`: Filter by mood
-- `tag`: Filter by tag
-- `search`: Search in name, description, and prompt
-- `sortBy`: Sort by `popular` or default (creation date)
-
-**Response:**
-```json
-{
-  "presets": [
-    {
-      "id": "uuid",
-      "name": "Ocean Waves",
-      "description": "Peaceful ocean sounds",
-      "prompt": "gentle ocean waves on beach",
-      "mood": "Relaxing",
-      "tags": ["nature", "ocean"],
-      "parameters": { "duration": 45 },
-      "createdAt": "2026-01-11T00:00:00.000Z",
-      "updatedAt": "2026-01-11T00:00:00.000Z",
-      "timesPlayed": 5,
-      "isFavorite": true
-    }
-  ]
-}
-```
-
-#### `POST /api/presets`
-Create a new preset.
-
-**Request Body:**
-```json
-{
-  "name": "Forest Ambience",
-  "description": "Peaceful forest with birds",
-  "prompt": "forest with birdsong",
-  "mood": "Nature",
-  "tags": ["nature", "forest", "birds"]
-}
-```
-
-**Response:** `201 Created` with preset object
-
-#### `GET /api/presets/:id`
-Get specific preset by ID.
-
-#### `PATCH /api/presets/:id`
-Update preset fields.
-
-#### `DELETE /api/presets/:id`
-Delete preset.
-
-#### `POST /api/presets/:id/play`
-Increment play count for preset.
-
-### Favorites
-
-#### `GET /api/favorites`
-Get all favorite presets.
-
-#### `POST /api/favorites/:presetId`
-Add preset to favorites.
-
-#### `DELETE /api/favorites/:presetId`
-Remove preset from favorites.
-
-### Other Endpoints
-
-#### `GET /api/health`
-Health check for backend and ComfyUI.
-
-#### `GET /api/moods`
-Get list of available mood presets.
-
-#### `GET /api/history`
-Get recent soundscape generation history.
-
-**Query Parameters:**
-- `limit` (optional): Maximum number of items to return (default: 10)
-
-### Playlist Management
-
-#### `GET /api/playlists`
-Get all playlists with optional search.
-
-**Query Parameters:**
-- `search` (optional): Search in playlist name or description
-
-**Response:**
-```json
-{
-  "playlists": [
-    {
-      "id": "uuid",
-      "name": "Morning Mix",
-      "description": "Energizing morning sounds",
-      "presets": [
-        {
-          "presetId": "preset-uuid",
-          "duration": 300,
-          "order": 0
-        }
-      ],
-      "rotationInterval": 300,
-      "shuffle": false,
-      "repeat": true,
-      "createdAt": "2026-01-13T00:00:00.000Z",
-      "updatedAt": "2026-01-13T00:00:00.000Z"
-    }
-  ]
-}
-```
-
-#### `POST /api/playlists`
-Create a new playlist.
-
-**Request Body:**
-```json
-{
-  "name": "Evening Relaxation",
-  "description": "Calm evening atmospheres",
-  "rotationInterval": 300,
-  "shuffle": false,
-  "repeat": true
-}
-```
-
-**Response:** `201 Created` with playlist object
-
-#### `GET /api/playlists/:id`
-Get specific playlist by ID.
-
-#### `PATCH /api/playlists/:id`
-Update playlist properties.
-
-**Request Body:**
-```json
-{
-  "name": "Updated Name",
-  "description": "Updated description",
-  "rotationInterval": 600,
-  "shuffle": true
-}
-```
-
-#### `DELETE /api/playlists/:id`
-Delete playlist.
-
-#### `POST /api/playlists/:id/presets`
-Add preset to playlist.
-
-**Request Body:**
-```json
-{
-  "presetId": "preset-uuid",
-  "duration": 300,
-  "order": 0
-}
-```
-
-#### `DELETE /api/playlists/:id/presets/:presetId`
-Remove preset from playlist.
-
-#### `PUT /api/playlists/:id/reorder`
-Reorder presets in playlist.
-
-**Request Body:**
-```json
-{
-  "presetIds": ["preset-uuid-1", "preset-uuid-2", "preset-uuid-3"]
-}
-```
-
-### Other Endpoints
-
-The project does not persist data on the server. Audio is streamed directly
-from ComfyUI to the client and discarded after playback. Client‑side storage
-is not implemented beyond what the browser provides.
-
-```
-entropic_aura
-    ├── index.html 
-    ├── public
-    │   ├── layout
-    │   ├── themes
-    │   ├── favicon.png
-    │   └── index.html
-    ├── src
-    │   ├── assets
-    │   │   ├── css
-    │   │   ├── fonts
-    │   │   ├── img
-    │   │   ├── js
-    │   │   └── scss
-    │   ├── components (custom components)
-    |   |   └── component-name
-    |   ├── layouts (layout blocks)
-    |   ├── service (temporary mock data for UI dev)
-    |   ├── services (use only these to connect to API!)
-    │   ├── mixins
-    │   │   ├── formMixin.js
-    │   │   └── showSwal.js
-    │   ├── router
-    |   |    └── index.js
-    |   |    └── routes.js (extra routes)
-    │   ├── store
-    │   │   ├── auth.module.js
-    |   |   ├── index.js
-    |   |   |── modules
-    |   |   |    ├── module-name
-    |   |   |── services (extra services, deprecating)
-    │   │   └── profile.module.js
-    │   ├── views (naming e.g. Profile/EditProfie.vue)
-    │   │   ├── components
-    │   ├── App.vue
-    │   └── main.js
-    ├── .browserslistrc
-    ├── .whyareyoulookingatthis
-    ├── .eslintrc.js
-    ├── .gitignore
-    ├── babel.config.json
-    ├── vue.config.js
-    ├── webpack.config.js
-    ├── .env.example
-    ├── Dockerfile
-    ├── vite.config.js
-    ├── docker-compose.yml
-    ├── package.json
-    └── README.md
-```
-
-### Backend
-
-An experimental Node.js helper lives in `backend/` and demonstrates how to
-call a local [ComfyUI](https://github.com/comfyanonymous/ComfyUI) server to
-generate audio and stream it through an FFmpeg filter chain. The helper now
-outputs AAC at 128 kbps and is served by `backend/server.js` on `/api/stream`.
-
-Visit [http://localhost:8080/soundscape](http://localhost:8080/soundscape) and
-click **Generate** to hear the streaming result in the built‑in audio player.
-Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
 
 ## Roadmap
 
@@ -579,8 +265,8 @@ Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
 - ✅ Individual track volume control
 - ✅ 4-channel audio generation and mixing
 - ✅ Per-channel volume control with visualizers
-- ⏳ Real-time audio mixing engine (backend ready, frontend integration pending)
-- ⏳ Crossfade transitions between tracks (backend ready, frontend integration pending)
+- ✅ Real-time audio mixing engine with crossfading
+- ✅ Crossfade transitions between tracks
 
 ### Phase 3: User Experience (Completed)
 - ✅ Preset creation and management system
@@ -590,10 +276,11 @@ Adjust `backend/audio-workflow.json` to match your ComfyUI workflow.
 - ✅ Playlist builder with rotation intervals
 - ✅ Enhanced audio visualization
 
-### Phase 4: Advanced Features (Completed)
+### Phase 4: Advanced Features (In Progress)
 - ✅ Playlist automation and scheduling
 - ✅ Audio visualization components
 - ✅ User settings and preferences
 - ✅ Export/import presets and playlists
 - ✅ 4-channel audio mixer with advanced controls
-- ⏳ Real-time audio mixing with crossfading (backend infrastructure ready)
+- ✅ Real-time audio mixing with crossfading
+- ⏳ Advanced audio effects and filter chains
