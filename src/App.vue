@@ -3,12 +3,41 @@
     <BackgroundVisualizer />
     <nav class="main-nav">
       <div class="nav-container">
-        <h1 class="app-title">Entropic Aura</h1>
+        <div class="app-title">
+          <svg class="logo" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <circle cx="20" cy="20" r="18" fill="url(#logoGradient)" opacity="0.3"/>
+            <circle cx="20" cy="20" r="14" fill="none" stroke="url(#logoGradient)" stroke-width="2"/>
+            <circle cx="20" cy="20" r="10" fill="none" stroke="url(#logoGradient)" stroke-width="1.5"/>
+            <circle cx="20" cy="20" r="6" fill="none" stroke="url(#logoGradient)" stroke-width="1"/>
+            <path d="M 20 2 Q 22 10, 20 20 Q 18 30, 20 38" stroke="url(#logoGradient)" stroke-width="1.5" fill="none" opacity="0.6"/>
+            <path d="M 2 20 Q 10 22, 20 20 Q 30 18, 38 20" stroke="url(#logoGradient)" stroke-width="1.5" fill="none" opacity="0.6"/>
+            <circle cx="20" cy="20" r="3" fill="url(#logoGradient)"/>
+          </svg>
+          <span>Entropic Aura</span>
+        </div>
         <div class="nav-links">
-          <router-link to="/soundscape" class="nav-link">Soundscape</router-link>
-          <router-link to="/presets" class="nav-link">Presets</router-link>
-          <router-link to="/playlists" class="nav-link">Playlists</router-link>
-          <router-link to="/settings" class="nav-link">Settings</router-link>
+          <router-link to="/soundscape" class="nav-link" title="Soundscape">
+            <i class="pi pi-volume-up"></i>
+            <span class="nav-text">Soundscape</span>
+          </router-link>
+          <router-link to="/presets" class="nav-link" title="Presets">
+            <i class="pi pi-star"></i>
+            <span class="nav-text">Presets</span>
+          </router-link>
+          <router-link to="/playlists" class="nav-link" title="Playlists">
+            <i class="pi pi-list"></i>
+            <span class="nav-text">Playlists</span>
+          </router-link>
+          <router-link to="/settings" class="nav-link" title="Settings">
+            <i class="pi pi-cog"></i>
+            <span class="nav-text">Settings</span>
+          </router-link>
         </div>
       </div>
     </nav>
@@ -57,6 +86,15 @@ body {
   font-size: 1.5rem;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .nav-links {
@@ -72,6 +110,13 @@ body {
   padding: 0.5rem 1rem;
   border-radius: 6px;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-link i {
+  font-size: 1.2rem;
 }
 
 .nav-link:hover {

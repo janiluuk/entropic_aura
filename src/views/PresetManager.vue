@@ -4,14 +4,18 @@
       <button 
         :class="{ active: activeTab === 'all' }" 
         @click="activeTab = 'all'"
+        title="All Presets"
       >
-        All Presets
+        <i class="pi pi-th-large"></i>
+        <span>All Presets</span>
       </button>
       <button 
         :class="{ active: activeTab === 'favorites' }" 
         @click="activeTab = 'favorites'"
+        title="Favorites"
       >
-        ♥ Favorites
+        <i class="pi pi-heart-fill"></i>
+        <span>Favorites</span>
       </button>
     </div>
     
@@ -36,8 +40,9 @@
     <div v-if="currentPreset" class="player-section">
       <div class="player-header">
         <h3>Now Playing: {{ currentPreset.name }}</h3>
-        <button @click="stopPlaying" class="stop-btn">
-          Stop
+        <button @click="stopPlaying" class="stop-btn" title="Stop Playback">
+          <i class="pi pi-stop"></i>
+          <span>Stop</span>
         </button>
       </div>
       
@@ -142,6 +147,13 @@ function handleAudioLoaded() {
   cursor: pointer;
   border-radius: 20px 20px 0 0;
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tabs button i {
+  font-size: 1.1rem;
 }
 
 .tabs button:hover {
@@ -195,6 +207,13 @@ function handleAudioLoaded() {
   font-weight: 600;
   transition: all 0.3s;
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stop-btn i {
+  font-size: 1.1rem;
 }
 
 .stop-btn:hover {

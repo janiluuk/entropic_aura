@@ -163,11 +163,13 @@
               <span class="label-text">Export / Import</span>
             </label>
             <div class="button-group">
-              <button @click="exportData" class="action-btn">
-                📥 Export Presets & Playlists
+              <button @click="exportData" class="action-btn" title="Export Data">
+                <i class="pi pi-download"></i>
+                <span>Export Presets & Playlists</span>
               </button>
-              <button @click="triggerImport" class="action-btn">
-                📤 Import Data
+              <button @click="triggerImport" class="action-btn" title="Import Data">
+                <i class="pi pi-upload"></i>
+                <span>Import Data</span>
               </button>
               <input
                 ref="fileInput"
@@ -183,8 +185,9 @@
             <label>
               <span class="label-text">Clear Data</span>
             </label>
-            <button @click="clearAllData" class="danger-btn">
-              🗑️ Clear All Presets & Playlists
+            <button @click="clearAllData" class="danger-btn" title="Clear All Data">
+              <i class="pi pi-trash"></i>
+              <span>Clear All Presets & Playlists</span>
             </button>
             <small>Warning: This action cannot be undone!</small>
           </div>
@@ -192,11 +195,13 @@
       </div>
 
       <div class="actions">
-        <button @click="resetToDefaults" class="secondary-btn">
-          Reset to Defaults
+        <button @click="resetToDefaults" class="secondary-btn" title="Reset Settings">
+          <i class="pi pi-refresh"></i>
+          <span>Reset to Defaults</span>
         </button>
-        <button @click="saveSettings" class="primary-btn">
-          Save Settings
+        <button @click="saveSettings" class="primary-btn" title="Save Settings">
+          <i class="pi pi-check"></i>
+          <span>Save Settings</span>
         </button>
       </div>
 
@@ -547,6 +552,14 @@ h1 {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-btn i,
+.danger-btn i {
+  font-size: 1rem;
 }
 
 .action-btn {
@@ -589,6 +602,14 @@ small {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.primary-btn i,
+.secondary-btn i {
+  font-size: 1rem;
 }
 
 .primary-btn {

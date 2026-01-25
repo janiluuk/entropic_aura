@@ -2,8 +2,9 @@
   <div class="playlist-manager">
     <div class="header">
       <h1>Playlists</h1>
-      <button @click="showCreateDialog = true" class="create-btn">
-        + Create Playlist
+      <button @click="showCreateDialog = true" class="create-btn" title="Create New Playlist">
+        <i class="pi pi-plus"></i>
+        <span>Create Playlist</span>
       </button>
     </div>
 
@@ -31,13 +32,13 @@
           <h3>{{ playlist.name }}</h3>
           <div class="card-actions">
             <button @click="playPlaylist(playlist)" class="play-btn" title="Play">
-              ▶
+              <i class="pi pi-play"></i>
             </button>
             <button @click="editPlaylist(playlist)" class="edit-btn" title="Edit">
-              ✎
+              <i class="pi pi-pencil"></i>
             </button>
             <button @click="deletePlaylist(playlist.id)" class="delete-btn" title="Delete">
-              ×
+              <i class="pi pi-times"></i>
             </button>
           </div>
         </div>
@@ -50,8 +51,12 @@
         </div>
         
         <div class="playlist-options">
-          <span v-if="playlist.shuffle" class="option-badge">🔀 Shuffle</span>
-          <span v-if="playlist.repeat" class="option-badge">🔁 Repeat</span>
+          <span v-if="playlist.shuffle" class="option-badge">
+            <i class="pi pi-random"></i> Shuffle
+          </span>
+          <span v-if="playlist.repeat" class="option-badge">
+            <i class="pi pi-refresh"></i> Repeat
+          </span>
         </div>
       </div>
     </div>
@@ -108,10 +113,18 @@
           <p class="current-preset">{{ currentPresetName }}</p>
         </div>
         <div class="player-controls">
-          <button @click="previousPreset" class="control-btn">⏮</button>
-          <button @click="togglePlay" class="control-btn play">{{ isPlaying ? '⏸' : '▶' }}</button>
-          <button @click="nextPreset" class="control-btn">⏭</button>
-          <button @click="stopPlaylist" class="control-btn stop">⏹</button>
+          <button @click="previousPreset" class="control-btn" title="Previous">
+            <i class="pi pi-step-backward"></i>
+          </button>
+          <button @click="togglePlay" class="control-btn play" title="Play/Pause">
+            <i :class="isPlaying ? 'pi pi-pause' : 'pi pi-play'"></i>
+          </button>
+          <button @click="nextPreset" class="control-btn" title="Next">
+            <i class="pi pi-step-forward"></i>
+          </button>
+          <button @click="stopPlaylist" class="control-btn stop" title="Stop">
+            <i class="pi pi-stop"></i>
+          </button>
         </div>
       </div>
       
@@ -443,6 +456,13 @@ function handleAudioError() {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.create-btn i {
+  font-size: 1.1rem;
 }
 
 .create-btn:hover {
@@ -539,6 +559,13 @@ function handleAudioError() {
   cursor: pointer;
   font-size: 1rem;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-actions button i {
+  font-size: 0.9rem;
 }
 
 .play-btn {
@@ -563,7 +590,6 @@ function handleAudioError() {
 .delete-btn {
   background: #fee;
   color: #c33;
-  font-size: 1.5rem;
   line-height: 1;
 }
 
@@ -598,6 +624,13 @@ function handleAudioError() {
   border-radius: 4px;
   font-size: 0.8rem;
   color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.option-badge i {
+  font-size: 0.75rem;
 }
 
 .dialog-overlay {
@@ -742,6 +775,13 @@ function handleAudioError() {
   font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-btn i {
+  font-size: 1rem;
 }
 
 .control-btn:hover {
@@ -754,7 +794,10 @@ function handleAudioError() {
   color: white;
   width: 56px;
   height: 56px;
-  font-size: 1.5rem;
+}
+
+.control-btn.play i {
+  font-size: 1.2rem;
 }
 
 .control-btn.play:hover {
