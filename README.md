@@ -5,24 +5,110 @@
 ## Screenshots
 
 ### Soundscape Creator
-Create custom soundscapes with text prompts or voice input, with 4-channel audio mixing capabilities.
+The main page for creating custom atmospheric soundscapes. This is where the magic happens!
 
-![Soundscape Creator](https://github.com/user-attachments/assets/25109aa5-9f52-4286-95ac-cf2f8907af11)
+![Soundscape Creator - Initial View](screenshots/01-soundscape-creator-initial.png)
+
+**Features:**
+- **Text Prompt Input**: Describe your desired soundscape in natural language (e.g., "peaceful forest with birdsong" or "rain on a tin roof")
+- **Voice Input**: Use the microphone button to describe your soundscape with your voice
+- **Mood Presets**: Quick selection buttons for common moods (Relaxing, Energizing, Peaceful, Dark, Cinematic, Nature)
+- **Audio Player**: Built-in player with play/pause, volume control, and progress tracking
+- **4-Channel Audio Mixer**: Advanced mixing controls (expandable under "Advanced Settings")
+  - Individual volume sliders for each of 4 audio channels
+  - Real-time visualizers showing frequency data for each channel
+  - Mute/unmute controls for each channel
+  - Master controls to reset all or mute/unmute all channels
+- **Save as Preset**: Quickly save your current soundscape configuration for later use
+
+![Soundscape Creator - With Prompt](screenshots/05-soundscape-with-prompt.png)
+
+The interface also features a translucent navigation bar that adapts to the current page:
+
+![Soundscape Creator - Navigation](screenshots/08-translucent-nav-soundscape.png)
 
 ### Preset Manager
-Browse, search, and manage your saved atmosphere presets with favorites support.
+Browse, search, and manage your saved atmosphere presets. This is your personal library of soundscapes.
 
-![Preset Manager](https://github.com/user-attachments/assets/fef38093-f303-47f8-b762-1c914e3e2f7b)
+![Preset Manager](screenshots/02-presets-manager.png)
+
+**Features:**
+- **Search Bar**: Quick search across preset names, descriptions, and prompts
+- **Filter by Mood**: Filter presets by mood tags (Relaxing, Energizing, Nature, etc.)
+- **Filter by Tags**: Custom tags to organize your presets
+- **Sort Options**: Sort by creation date or popularity (play count)
+- **Favorites**: Star your favorite presets for quick access with a dedicated favorites filter
+- **Preset Cards**: Each card displays:
+  - Preset name and description
+  - Mood and custom tags
+  - Play count and last played date
+  - Quick actions: Play, Edit, Delete, Favorite/Unfavorite
+- **Create New**: Button to create a new preset from scratch
+- **Grid Layout**: Responsive grid that adapts to your screen size
+
+The preset manager also includes fallback sample data to help you get started:
+
+![Preset Manager - With Sample Data](screenshots/07-presets-with-fallback-data.png)
+
+And features the translucent navigation:
+
+![Preset Manager - Navigation](screenshots/09-translucent-nav-presets.png)
 
 ### Playlist Manager
-Create and manage playlists with automatic rotation and shuffle modes.
+Create and manage playlists that automatically rotate between different atmospheres.
 
-![Playlist Manager](https://github.com/user-attachments/assets/b059c4a5-7070-450c-ba54-e45ed852df7a)
+![Playlist Manager](screenshots/03-playlists-manager.png)
+
+**Features:**
+- **Search Playlists**: Find playlists by name or description
+- **Create New Playlist**: Build custom playlists with rotation intervals
+- **Playlist Cards**: Each card shows:
+  - Playlist name and description
+  - Number of presets included
+  - Rotation settings (interval, shuffle, repeat)
+  - Quick actions: Play, Edit, Delete
+- **Playlist Editor**: When creating or editing a playlist:
+  - Add presets from your preset library
+  - Set individual duration for each preset
+  - Reorder presets with drag-and-drop
+  - Configure global rotation interval (seconds between preset switches)
+  - Toggle shuffle mode (randomize preset order)
+  - Toggle repeat mode (loop the playlist)
+- **Automation**: Playlists automatically switch between presets based on your settings
+- **Visual Indicators**: See which preset is currently playing in an active playlist
 
 ### Settings
-Customize audio quality, playback preferences, visualizations, and manage your data.
+Customize your Entropic Aura experience with comprehensive settings.
 
-![Settings](https://github.com/user-attachments/assets/e0d18894-16e7-47ce-8f25-9f5893de59b7)
+![Settings](screenshots/04-settings.png)
+
+**Settings Categories:**
+- **Audio Quality**:
+  - Bitrate selection (128, 192, 256 kbps)
+  - Sample rate (44.1, 48 kHz)
+  - Channel configuration (Stereo, 4-Channel)
+- **Playback Preferences**:
+  - Auto-play next in playlists
+  - Crossfade duration
+  - Default volume level
+  - Pre-load next track option
+- **Visualizations**:
+  - Enable/disable audio visualizers
+  - Visualization style selection
+  - Color scheme preferences
+- **Data Management**:
+  - Export all presets and playlists (JSON format)
+  - Import previously exported data
+  - Clear all data (with confirmation)
+  - View storage usage statistics
+- **Appearance**:
+  - Theme selection (Light, Dark, Auto)
+  - Navigation style preferences
+  - Compact mode toggle
+- **Advanced**:
+  - ComfyUI server connection settings
+  - Debug mode toggle
+  - Performance monitoring
 
 ## Features
 
