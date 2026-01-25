@@ -23,8 +23,6 @@ The main page for creating custom atmospheric soundscapes. This is where the mag
 
 ![Soundscape Creator - With All Mood Buttons](https://github.com/user-attachments/assets/c928123a-f96f-41fc-8a88-339c57f99394)
 
-
-
 ### Preset Manager
 Browse, search, and manage your saved atmosphere presets. This is your personal library of soundscapes.
 
