@@ -132,6 +132,10 @@ test('updatePlaylist updates playlist fields', async () => {
   await cleanupTestFiles();
   
   const playlist = await createPlaylist({ name: 'Original' });
+  
+  // Add a small delay to ensure updatedAt differs from createdAt
+  await new Promise(resolve => setTimeout(resolve, 10));
+  
   const updated = await updatePlaylist(playlist.id, {
     name: 'Updated',
     description: 'New description',
