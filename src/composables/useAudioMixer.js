@@ -51,6 +51,12 @@ export function useAudioMixer() {
       currentNodes.value = nodes;
       isPlaying.value = true;
       return nodes;
+    } catch (error) {
+      // Handle errors and update state appropriately
+      console.error('Crossfade error:', error);
+      isCrossfading.value = false;
+      isPlaying.value = false;
+      throw error;
     } finally {
       isCrossfading.value = false;
     }

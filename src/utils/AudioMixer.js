@@ -11,6 +11,7 @@ export class AudioMixer {
     this.nextSource = null;
     this.nextGain = null;
     this.crossfadeDuration = 5; // Default 5 seconds
+    this.audioSources = new WeakMap(); // Track which audio elements have sources
   }
 
   /**
@@ -41,8 +42,15 @@ export class AudioMixer {
       this.init();
     }
 
-    // Create source from audio element
-    const source = this.audioContext.createMediaElementSource(audioElement);
+    // Check if we already have a source for this element
+    let source = this.audioSources.get(audioElement);
+    
+    if (!source) {
+      // Create source from audio element only if not already created
+      source = this.audioContext.createMediaElementSource(audioElement);
+      this.audioSources.set(audioElement, source);
+    }
+    
     const gain = this.audioContext.createGain();
     
     // Connect: source -> gain -> destination
@@ -104,6 +112,9 @@ export class AudioMixer {
     // Clean up old audio
     if (currentNodes && currentNodes.gain) {
       currentNodes.gain.disconnect();
+      if (currentNodes.source) {
+        currentNodes.source.disconnect();
+      }
     }
 
     return nextNodes;
@@ -131,6 +142,9 @@ export class AudioMixer {
     });
 
     nodes.gain.disconnect();
+    if (nodes.source) {
+      nodes.source.disconnect();
+    }
   }
 
   /**

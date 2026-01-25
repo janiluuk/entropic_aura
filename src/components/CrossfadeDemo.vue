@@ -42,10 +42,10 @@
     
     <!-- Hidden audio elements for demo -->
     <audio ref="audio1" loop>
-      <source :src="track1Url" type="audio/aac" />
+      <source :src="track1Url" />
     </audio>
     <audio ref="audio2" loop>
-      <source :src="track2Url" type="audio/aac" />
+      <source :src="track2Url" />
     </audio>
   </div>
 </template>
