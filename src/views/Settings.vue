@@ -490,7 +490,7 @@ h1 {
 }
 
 .label-text {
-  color: #2c3e50;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
 }
 
@@ -531,10 +531,24 @@ h1 {
 .number-input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
   font-size: 1rem;
   font-family: inherit;
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+}
+
+.select-input:focus,
+.number-input:focus {
+  outline: none;
+  border-color: rgba(66, 185, 131, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.select-input option {
+  background: #2a2a2a;
+  color: #ffffff;
 }
 
 .button-group {
