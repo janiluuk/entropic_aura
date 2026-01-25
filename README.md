@@ -23,9 +23,15 @@ The main page for creating custom atmospheric soundscapes. This is where the mag
 
 ![Soundscape Creator - With Prompt](screenshots/05-soundscape-with-prompt.png)
 
+The updated design shows enhanced visual elements and improved user experience:
+
+![Soundscape Creator - Updated Design](screenshots/06-soundscape-updated-design.png)
+
 The interface also features a translucent navigation bar that adapts to the current page:
 
 ![Soundscape Creator - Navigation](screenshots/08-translucent-nav-soundscape.png)
+
+![Soundscape Creator - Alternative Navigation](screenshots/soundscape_nav.png)
 
 ### Preset Manager
 Browse, search, and manage your saved atmosphere presets. This is your personal library of soundscapes.
@@ -53,6 +59,8 @@ The preset manager also includes fallback sample data to help you get started:
 And features the translucent navigation:
 
 ![Preset Manager - Navigation](screenshots/09-translucent-nav-presets.png)
+
+![Preset Manager - Alternative Navigation](screenshots/presets_nav.png)
 
 ### Playlist Manager
 Create and manage playlists that automatically rotate between different atmospheres.
